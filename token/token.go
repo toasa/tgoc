@@ -5,8 +5,10 @@ type TokenType int
 
 // tokentype
 const (
-	TKINT = iota
-	TKEOF
+	TKINT   = iota // 20, 255
+	TKPLUS         // '+'
+	TKMINUS        // '-'
+	TKEOF          // EOF
 )
 
 // Token (minimum unit of Go code)

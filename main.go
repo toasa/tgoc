@@ -22,6 +22,16 @@ func main() {
 	fmt.Printf("	push rbp\n")
 	fmt.Printf("	mov rbp, rsp\n")
 	fmt.Printf("	mov rax, %s\n", l.Tokens[0].Literal)
+
+	for i := 1; i < len(l.Tokens)-1; i += 2 {
+		if l.Tokens[i].Literal == "+" {
+			fmt.Printf("	add rax, %s\n", l.Tokens[i+1].Literal)
+		}
+		if l.Tokens[i].Literal == "-" {
+			fmt.Printf("	sub rax, %s\n", l.Tokens[i+1].Literal)
+		}
+	}
+
 	fmt.Printf("	pop rbp\n")
 	fmt.Printf("	ret\n")
 }

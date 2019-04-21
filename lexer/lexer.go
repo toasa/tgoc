@@ -27,6 +27,10 @@ func (l *Lexer) Analyze() {
 			tok = token.New(token.TKINT, l.readDigit())
 		} else if l.Input[l.Pos] == '\000' {
 			tok = token.New(token.TKEOF, "")
+		} else if l.Input[l.Pos] == '+' {
+			tok = token.New(token.TKPLUS, "+")
+		} else if l.Input[l.Pos] == '-' {
+			tok = token.New(token.TKMINUS, "-")
 		}
 
 		l.Tokens = append(l.Tokens, tok)
