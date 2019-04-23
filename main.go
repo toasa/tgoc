@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"tgoc/lexer"
 	"tgoc/parser"
@@ -17,12 +18,16 @@ func main() {
 	l := lexer.New(input)
 	l.Analyze()
 
-	// for _, tok := range l.Tokens {
-	// 	fmt.Printf("%+v\n", tok)
-	// }
+	// printTokens(l)
 
 	p := parser.New(l.Tokens)
 	node := p.Parse()
 
 	x86.Gen(node)
+}
+
+func printTokens(l *lexer.Lexer) {
+	for _, tok := range l.Tokens {
+		fmt.Printf("%+v\n", tok)
+	}
 }
