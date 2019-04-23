@@ -17,23 +17,20 @@ func gen(node ast.Node) {
 		gen(be.Lhs)
 		gen(be.Rhs)
 
+		fmt.Printf("	pop rdi\n")
+		fmt.Printf("	pop rax\n")
 		switch be.Op {
-		case "*":
-			fmt.Printf("	pop rdi\n")
-			fmt.Printf("	pop rax\n")
-			fmt.Printf("	mul rdi\n")
-			fmt.Printf("	push rax\n")
 		case "+":
-			fmt.Printf("	pop rdi\n")
-			fmt.Printf("	pop rax\n")
 			fmt.Printf("	add rax, rdi\n")
-			fmt.Printf("	push rax\n")
 		case "-":
-			fmt.Printf("	pop rdi\n")
-			fmt.Printf("	pop rax\n")
 			fmt.Printf("	sub rax, rdi\n")
-			fmt.Printf("	push rax\n")
+		case "*":
+			fmt.Printf("	mul rdi\n")
+		case "/":
+			fmt.Printf("    xor rdx, rdx\n")
+			fmt.Printf("    div rdi\n")
 		}
+		fmt.Printf("	push rax\n")
 		return
 	}
 
@@ -42,7 +39,6 @@ func gen(node ast.Node) {
 		gen(es.Expr)
 	}
 
-	//fmt.Printf("	pop rdi\n")
 	fmt.Printf("	pop rax\n")
 }
 

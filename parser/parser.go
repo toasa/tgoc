@@ -31,10 +31,15 @@ func (p *Parser) parseTerm() ast.Expr {
 
 func (p *Parser) parseMul() ast.Expr {
 	lhs := p.parseTerm()
-	for p.curTokenIs(token.MUL) {
+	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) {
+		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseTerm()
-		lhs = &ast.BinaryExpr{Op: "*", Lhs: lhs, Rhs: rhs}
+		if op == "*" {
+			lhs = &ast.BinaryExpr{Op: "*", Lhs: lhs, Rhs: rhs}
+		} else {
+			lhs = &ast.BinaryExpr{Op: "/", Lhs: lhs, Rhs: rhs}
+		}
 	}
 	return lhs
 }
@@ -52,7 +57,6 @@ func (p *Parser) parseAdd() ast.Expr {
 			lhs = &ast.BinaryExpr{Op: "-", Lhs: lhs, Rhs: rhs}
 		}
 	}
-
 	return lhs
 }
 
@@ -74,9 +78,7 @@ func printTree(node ast.Expr, tab int) {
 
 func (p *Parser) parseExpr() ast.Expr {
 	lhs := p.parseAdd()
-
 	//printTree(lhs, 0)
-
 	return lhs
 }
 
