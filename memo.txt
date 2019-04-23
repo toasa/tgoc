@@ -1,0 +1,17 @@
+token.go
+* identifiers
+* keywords
+* operators and punctuation
+* literals
+    - Integer literals
+    - Floating-point literals
+    - Imaginary literals
+    - Rune literals
+    - String literals
+
+
+ast.go
+* Expresison
+    - Operator
+* Statement
+* Built-in function

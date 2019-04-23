@@ -24,13 +24,15 @@ func (l *Lexer) Analyze() {
 
 		var tok token.Token
 		if isDigit(l.Input[l.Pos]) {
-			tok = token.New(token.TKINT, l.readDigit())
+			tok = token.New(token.INT, l.readDigit())
 		} else if l.Input[l.Pos] == '\000' {
-			tok = token.New(token.TKEOF, "")
+			tok = token.New(token.EOF, "")
 		} else if l.Input[l.Pos] == '+' {
-			tok = token.New(token.TKPLUS, "+")
+			tok = token.New(token.PLUS, "+")
 		} else if l.Input[l.Pos] == '-' {
-			tok = token.New(token.TKMINUS, "-")
+			tok = token.New(token.MINUS, "-")
+		} else if l.Input[l.Pos] == '*' {
+			tok = token.New(token.MUL, "*")
 		}
 
 		l.Tokens = append(l.Tokens, tok)

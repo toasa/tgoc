@@ -1,14 +1,15 @@
 package token
 
-// TokenType
-type TokenType int
+// TokenType is assigned unique number
+type TokenType string
 
 // tokentype
 const (
-	TKINT   = iota // 20, 255
-	TKPLUS         // '+'
-	TKMINUS        // '-'
-	TKEOF          // EOF
+	INT   = "INT"   // 20, 255
+	PLUS  = "PLUS"  // '+'
+	MINUS = "MINUS" // '-'
+	MUL   = "MUL"   // '*'
+	EOF   = "EOF"   // End of file
 )
 
 // Token (minimum unit of Go code)
