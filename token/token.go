@@ -10,6 +10,7 @@ const (
 	SUB = "SUB" // '-'
 	MUL = "MUL" // '*'
 	DIV = "DIV" // '/'
+	REM = "REM" // '%'
 	EOF = "EOF" // End of file
 )
 

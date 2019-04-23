@@ -31,14 +31,16 @@ func (p *Parser) parseTerm() ast.Expr {
 
 func (p *Parser) parseMul() ast.Expr {
 	lhs := p.parseTerm()
-	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) {
+	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) || p.curTokenIs(token.REM) {
 		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseTerm()
 		if op == "*" {
 			lhs = &ast.BinaryExpr{Op: "*", Lhs: lhs, Rhs: rhs}
-		} else {
+		} else if op == "/" {
 			lhs = &ast.BinaryExpr{Op: "/", Lhs: lhs, Rhs: rhs}
+		} else if op == "%" {
+			lhs = &ast.BinaryExpr{Op: "%", Lhs: lhs, Rhs: rhs}
 		}
 	}
 	return lhs

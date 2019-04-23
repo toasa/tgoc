@@ -29,6 +29,10 @@ func gen(node ast.Node) {
 		case "/":
 			fmt.Printf("    xor rdx, rdx\n")
 			fmt.Printf("    div rdi\n")
+		case "%":
+			fmt.Printf("    xor rdx, rdx\n")
+			fmt.Printf("    div rdi\n")
+			fmt.Printf("	mov rax, rdx\n")
 		}
 		fmt.Printf("	push rax\n")
 		return

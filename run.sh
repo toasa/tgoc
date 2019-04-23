@@ -8,6 +8,7 @@ run () {
     output=$?
 
     if [ $output != $expected ]; then
+        echo "${input}"
         echo "expected ${expected}, but got ${output}"
         exit 1
     else
@@ -23,6 +24,7 @@ run "5 + 3" 8
 run "5 - 3" 2
 run "5 * 3" 15
 run "15 / 3" 5
+run "15 % 3" 0
 
 run "5 + 3 + 10" 18
 run "5 - 3 + 10" 12
