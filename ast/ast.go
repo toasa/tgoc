@@ -1,7 +1,12 @@
 package ast
 
+import (
+	"bytes"
+	"strconv"
+)
+
 type Node interface {
-	TokenLiteral() string
+	String() string
 }
 
 type Stmt interface {
@@ -13,8 +18,16 @@ type ExprStmt struct {
 	Expr Expr
 }
 
-func (es *ExprStmt) TokenLiteral() string { return "" }
-func (es *ExprStmt) stmtNode()            {}
+func (es *ExprStmt) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(es.Expr.String())
+	out.WriteString(")")
+
+	return out.String()
+}
+func (es *ExprStmt) stmtNode() {}
 
 type Expr interface {
 	Node
@@ -27,12 +40,24 @@ type BinaryExpr struct {
 	Rhs Expr
 }
 
-func (be *BinaryExpr) TokenLiteral() string { return "" }
-func (be *BinaryExpr) exprNode()            {}
+func (be *BinaryExpr) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(be.Lhs.String())
+	out.WriteString(be.Op)
+	out.WriteString(be.Rhs.String())
+	out.WriteString(")")
+
+	return out.String()
+}
+func (be *BinaryExpr) exprNode() {}
 
 type IntLit struct {
 	Val int
 }
 
-func (il *IntLit) TokenLiteral() string { return "" }
-func (il *IntLit) exprNode()            {}
+func (il *IntLit) String() string {
+	return strconv.Itoa(il.Val)
+}
+func (il *IntLit) exprNode() {}
