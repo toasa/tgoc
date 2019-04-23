@@ -13,6 +13,8 @@ const (
 	REM    = "REM"    // '%'
 	LPAREN = "LPAREN" // '('
 	RPAREN = "RPAREN" // ')'
+	IDENT  = "IDENT"  // abc, toasa
+	SVDECL = "SVDECL" // ':=' Short Var Declaration
 	EOF    = "EOF"    // End of file
 )
 

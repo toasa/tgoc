@@ -11,6 +11,17 @@ type Lexer struct {
 	Input  string
 }
 
+var keywords []string = []string{
+	"break", "default", "func",
+	"interface", "select",
+	"case", "defer", "go", "map",
+	"struct", "chan", "else",
+	"goto", "package", "switch",
+	"const", "fallthrough", "if",
+	"range", "type", "continue",
+	"for", "import", "return", "var",
+}
+
 // New lexer create
 func New(input string) *Lexer {
 	t := []token.Token{}
@@ -19,10 +30,11 @@ func New(input string) *Lexer {
 
 // Analyze the input string ans split the token sequences
 func (l *Lexer) Analyze() {
+
+	var tok token.Token
+
 	for ; l.Pos < len(l.Input); l.Pos++ {
 		l.skip()
-
-		var tok token.Token
 
 		switch l.Input[l.Pos] {
 		case '+':
@@ -39,9 +51,21 @@ func (l *Lexer) Analyze() {
 			tok = token.New(token.LPAREN, "(")
 		case ')':
 			tok = token.New(token.RPAREN, ")")
+		case ':':
+			if l.Input[l.Pos+1] == '=' {
+				l.Pos++
+				tok = token.New(token.SVDECL, ":=")
+			}
+		case '\000':
+			tok = token.New(token.EOF, "")
+			l.Tokens = append(l.Tokens, tok)
+			return
 		default:
 			if isDigit(l.Input[l.Pos]) {
 				tok = token.New(token.INT, l.readDigit())
+			} else if isChar(l.Input[l.Pos]) {
+				str := l.readIdent()
+				tok = token.New(token.IDENT, str)
 			}
 		}
 
@@ -55,6 +79,10 @@ func isDigit(c byte) bool {
 
 func isSpace(c byte) bool {
 	return c == ' ' || c == '\t' || c == '\n'
+}
+
+func isChar(c byte) bool {
+	return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || (c == '_')
 }
 
 func (l *Lexer) skip() {
@@ -72,6 +100,18 @@ func (l *Lexer) readDigit() string {
 		}
 	}
 
+	l.Pos = tail - 1
+	return l.Input[head:tail]
+}
+
+func (l *Lexer) readIdent() string {
+	head := l.Pos
+	tail := l.Pos + 1
+	for ; tail < len(l.Input); tail++ {
+		if !isChar(l.Input[tail]) {
+			break
+		}
+	}
 	l.Pos = tail - 1
 	return l.Input[head:tail]
 }
