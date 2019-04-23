@@ -19,14 +19,22 @@ func New(t []token.Token) *Parser {
 }
 
 func (p *Parser) parseTerm() ast.Expr {
-	if p.curTokenIs(token.EOF) {
-		return nil
+	utils.Assert(p.curTokenIs(token.INT) || p.curTokenIs(token.LPAREN), "invalid token")
+
+	if p.curTokenIs(token.INT) {
+		n, _ := strconv.Atoi(p.Tokens[p.Pos].Literal)
+		p.nextToken()
+		return &ast.IntLit{Val: n}
+	}
+	if p.curTokenIs(token.LPAREN) {
+		p.nextToken()
+		node := p.parseAdd()
+		utils.Assert(p.curTokenIs(token.RPAREN), fmt.Sprintf("expected RPAREN, but got %s", p.curToken().Literal))
+		p.nextToken()
+		return node
 	}
 
-	utils.Assert(p.curTokenIs(token.INT), "invalid token")
-	n, _ := strconv.Atoi(p.Tokens[p.Pos].Literal)
-	p.nextToken()
-	return &ast.IntLit{Val: n}
+	return nil
 }
 
 func (p *Parser) parseMul() ast.Expr {

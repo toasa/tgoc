@@ -35,6 +35,10 @@ func (l *Lexer) Analyze() {
 			tok = token.New(token.DIV, "/")
 		case '%':
 			tok = token.New(token.REM, "%")
+		case '(':
+			tok = token.New(token.LPAREN, "(")
+		case ')':
+			tok = token.New(token.RPAREN, ")")
 		default:
 			if isDigit(l.Input[l.Pos]) {
 				tok = token.New(token.INT, l.readDigit())
