@@ -42,7 +42,7 @@ func (p *Parser) parseMul() ast.Expr {
 func (p *Parser) parseAdd() ast.Expr {
 	lhs := p.parseMul()
 
-	for p.curTokenIs(token.PLUS) || p.curTokenIs(token.MINUS) {
+	for p.curTokenIs(token.ADD) || p.curTokenIs(token.SUB) {
 		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseMul()

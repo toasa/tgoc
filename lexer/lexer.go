@@ -23,16 +23,20 @@ func (l *Lexer) Analyze() {
 		l.skip()
 
 		var tok token.Token
-		if isDigit(l.Input[l.Pos]) {
-			tok = token.New(token.INT, l.readDigit())
-		} else if l.Input[l.Pos] == '\000' {
-			tok = token.New(token.EOF, "")
-		} else if l.Input[l.Pos] == '+' {
-			tok = token.New(token.PLUS, "+")
-		} else if l.Input[l.Pos] == '-' {
-			tok = token.New(token.MINUS, "-")
-		} else if l.Input[l.Pos] == '*' {
+
+		switch l.Input[l.Pos] {
+		case '+':
+			tok = token.New(token.ADD, "+")
+		case '-':
+			tok = token.New(token.SUB, "-")
+		case '*':
 			tok = token.New(token.MUL, "*")
+		case '/':
+			tok = token.New(token.DIV, "/")
+		default:
+			if isDigit(l.Input[l.Pos]) {
+				tok = token.New(token.INT, l.readDigit())
+			}
 		}
 
 		l.Tokens = append(l.Tokens, tok)

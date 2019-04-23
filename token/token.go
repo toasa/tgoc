@@ -5,11 +5,12 @@ type TokenType string
 
 // tokentype
 const (
-	INT   = "INT"   // 20, 255
-	PLUS  = "PLUS"  // '+'
-	MINUS = "MINUS" // '-'
-	MUL   = "MUL"   // '*'
-	EOF   = "EOF"   // End of file
+	INT = "INT" // 20, 255
+	ADD = "ADD" // '+'
+	SUB = "SUB" // '-'
+	MUL = "MUL" // '*'
+	DIV = "DIV" // '/'
+	EOF = "EOF" // End of file
 )
 
 // Token (minimum unit of Go code)
