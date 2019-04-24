@@ -10,6 +10,7 @@ import (
 
 func main() {
 	if len(os.Args) != 2 {
+		fmt.Println("[USAGE] go run main.go INPUT")
 		os.Exit(1)
 	}
 
