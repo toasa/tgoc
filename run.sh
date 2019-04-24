@@ -40,4 +40,8 @@ run "(2 + 3) * 4" 20
 run "(2 + 3) * (4 + 5)" 45
 run "26 / (10 + 3)" 2
 
+run "a := 20 * 2 a" 40
+run "abc := 30 + 4 * 2 xyz := abc * 2 xyz" 76
+run "a := 1 b := 1 c := a + b d := b + c e := c + d e " 5
+
 echo "OK"

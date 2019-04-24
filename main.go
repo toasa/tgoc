@@ -21,9 +21,9 @@ func main() {
 	// printTokens(l)
 
 	p := parser.New(l.Tokens)
-	node := p.Parse()
+	stmts := p.Parse()
 
-	x86.Gen(node)
+	x86.Gen(stmts, len(p.VarMap))
 }
 
 func printTokens(l *lexer.Lexer) {

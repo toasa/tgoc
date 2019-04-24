@@ -7,7 +7,7 @@ import (
 
 func Assert(cond bool, errMsg string) {
 	if !cond {
-		fmt.Errorf("error: %s", errMsg)
+		fmt.Printf("error: %s\n", errMsg)
 		os.Exit(1)
 	}
 }

@@ -12,14 +12,16 @@ import (
 type Parser struct {
 	Tokens []token.Token
 	Pos    int
+	VarMap map[string]*ast.Ident
+	Stmts  []ast.Stmt
 }
 
 func New(t []token.Token) *Parser {
-	return &Parser{Tokens: t, Pos: 0}
+	return &Parser{Tokens: t, Pos: 0, VarMap: map[string]*ast.Ident{}, Stmts: []ast.Stmt{}}
 }
 
 func (p *Parser) parseTerm() ast.Expr {
-	utils.Assert(p.curTokenIs(token.INT) || p.curTokenIs(token.LPAREN), "invalid token")
+	utils.Assert(p.curTokenIs(token.INT) || p.curTokenIs(token.LPAREN), fmt.Sprintf("invalid token: %s", p.curToken().Literal))
 
 	if p.curTokenIs(token.INT) {
 		n, _ := strconv.Atoi(p.Tokens[p.Pos].Literal)
@@ -37,12 +39,24 @@ func (p *Parser) parseTerm() ast.Expr {
 	return nil
 }
 
+func (p *Parser) parseIdent() ast.Expr {
+	if p.curTokenIs(token.IDENT) {
+		ident, ok := p.VarMap[p.curToken().Literal]
+		utils.Assert(ok, fmt.Sprintf("undeclared identifier: %s", p.curToken().Literal))
+		p.nextToken()
+		return ident
+	} else {
+		return p.parseTerm()
+	}
+}
+
 func (p *Parser) parseMul() ast.Expr {
-	lhs := p.parseTerm()
+	lhs := p.parseIdent()
+
 	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) || p.curTokenIs(token.REM) {
 		op := p.curToken().Literal
 		p.nextToken()
-		rhs := p.parseTerm()
+		rhs := p.parseIdent()
 		if op == "*" {
 			lhs = &ast.BinaryExpr{Op: "*", Lhs: lhs, Rhs: rhs}
 		} else if op == "/" {
@@ -51,6 +65,7 @@ func (p *Parser) parseMul() ast.Expr {
 			lhs = &ast.BinaryExpr{Op: "%", Lhs: lhs, Rhs: rhs}
 		}
 	}
+
 	return lhs
 }
 
@@ -98,13 +113,45 @@ func (p *Parser) parseExprStmt() ast.Stmt {
 	return es
 }
 
+func (p *Parser) parseDecl() ast.Decl {
+	utils.Assert(p.curTokenIs(token.IDENT), "identifier needed")
+	name := p.Tokens[p.Pos].Literal
+	p.nextToken()
+	p.nextToken()
+	val := p.parseExpr()
+	return &ast.SVDecl{Name: name, Val: val}
+}
+
+func (p *Parser) parseAssignStmt() ast.Stmt {
+	decl := p.parseDecl()
+	svd, ok := decl.(*ast.SVDecl)
+	if ok {
+		p.VarMap[svd.Name] = &ast.Ident{Name: svd.Name, Val: svd.Val}
+	}
+
+	as := &ast.AssignStmt{Decl: decl}
+	return as
+}
+
 func (p *Parser) parseStmt() ast.Stmt {
-	stmt := p.parseExprStmt()
+	var stmt ast.Stmt
+
+	if p.curTokenIs(token.IDENT) && p.peepTokenIs(token.SVDECL) {
+		stmt = p.parseAssignStmt()
+	} else {
+		stmt = p.parseExprStmt()
+	}
+
 	return stmt
 }
 
-func (p *Parser) Parse() ast.Node {
-	return p.parseStmt()
+func (p *Parser) Parse() []ast.Stmt {
+
+	for !p.curTokenIs(token.EOF) {
+		p.Stmts = append(p.Stmts, p.parseStmt())
+	}
+
+	return p.Stmts
 }
 
 func (p *Parser) curTokenIs(tt token.TokenType) bool {
