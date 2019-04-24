@@ -5,17 +5,18 @@ type TokenType string
 
 // tokentype
 const (
-	INT    = "INT"    // 20, 255
-	ADD    = "ADD"    // '+'
-	SUB    = "SUB"    // '-'
-	MUL    = "MUL"    // '*'
-	DIV    = "DIV"    // '/'
-	REM    = "REM"    // '%'
-	LPAREN = "LPAREN" // '('
-	RPAREN = "RPAREN" // ')'
-	IDENT  = "IDENT"  // abc, toasa
-	SVDECL = "SVDECL" // ':=' Short Var Declaration
-	EOF    = "EOF"    // End of file
+	INT       = "INT"       // 20, 255
+	ADD       = "ADD"       // '+'
+	SUB       = "SUB"       // '-'
+	MUL       = "MUL"       // '*'
+	DIV       = "DIV"       // '/'
+	REM       = "REM"       // '%'
+	LPAREN    = "LPAREN"    // '('
+	RPAREN    = "RPAREN"    // ')'
+	IDENT     = "IDENT"     // abc, toasa
+	SVDECL    = "SVDECL"    // ':=' Short Var Declaration
+	SEMICOLON = "SEMICOLON" // ';'
+	EOF       = "EOF"       // End of file
 )
 
 // Token (minimum unit of Go code)

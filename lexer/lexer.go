@@ -56,6 +56,8 @@ func (l *Lexer) Analyze() {
 				l.Pos++
 				tok = token.New(token.SVDECL, ":=")
 			}
+		case ';':
+			tok = token.New(token.SEMICOLON, ";")
 		case '\000':
 			tok = token.New(token.EOF, "")
 			l.Tokens = append(l.Tokens, tok)

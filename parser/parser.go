@@ -142,6 +142,10 @@ func (p *Parser) parseStmt() ast.Stmt {
 		stmt = p.parseExprStmt()
 	}
 
+	if p.curTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
 	return stmt
 }
 
