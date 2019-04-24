@@ -51,6 +51,15 @@ func (as *AssignStmt) String() string {
 }
 func (as *AssignStmt) stmtNode() {}
 
+type ReturnStmt struct {
+	Expr Expr
+}
+
+func (rs *ReturnStmt) String() string {
+	return "return " + rs.Expr.String()
+}
+func (rs *ReturnStmt) stmtNode() {}
+
 // --------------------------------------------------------
 // - Expression
 // --------------------------------------------------------

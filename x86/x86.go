@@ -79,6 +79,13 @@ func genStmts(stmts []ast.Stmt) {
 			fmt.Printf("	pop rax\n")
 		case *ast.AssignStmt:
 			genDecl(stmt.Decl)
+		case *ast.ReturnStmt:
+			genExpr(stmt.Expr)
+			fmt.Printf("	pop rax\n")
+			fmt.Printf("	mov rsp, rbp\n")
+			fmt.Printf("	pop rbp\n")
+			fmt.Printf("	ret\n")
+			return
 		}
 	}
 }

@@ -133,11 +133,18 @@ func (p *Parser) parseAssignStmt() ast.Stmt {
 	return as
 }
 
+func (p *Parser) parseReturnStmt() ast.Stmt {
+	p.nextToken()
+	return &ast.ReturnStmt{Expr: p.parseExpr()}
+}
+
 func (p *Parser) parseStmt() ast.Stmt {
 	var stmt ast.Stmt
 
 	if p.curTokenIs(token.IDENT) && p.peepTokenIs(token.SVDECL) {
 		stmt = p.parseAssignStmt()
+	} else if p.curTokenIs(token.RETURN) {
+		stmt = p.parseReturnStmt()
 	} else {
 		stmt = p.parseExprStmt()
 	}

@@ -16,6 +16,7 @@ const (
 	IDENT     = "IDENT"     // abc, toasa
 	SVDECL    = "SVDECL"    // ':=' Short Var Declaration
 	SEMICOLON = "SEMICOLON" // ';'
+	RETURN    = "RETURN"    // 'return'
 	EOF       = "EOF"       // End of file
 )
 

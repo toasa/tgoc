@@ -11,15 +11,8 @@ type Lexer struct {
 	Input  string
 }
 
-var keywords []string = []string{
-	"break", "default", "func",
-	"interface", "select",
-	"case", "defer", "go", "map",
-	"struct", "chan", "else",
-	"goto", "package", "switch",
-	"const", "fallthrough", "if",
-	"range", "type", "continue",
-	"for", "import", "return", "var",
+var keywords map[string]token.TokenType = map[string]token.TokenType{
+	"return": token.RETURN,
 }
 
 // New lexer create
@@ -67,7 +60,12 @@ func (l *Lexer) Analyze() {
 				tok = token.New(token.INT, l.readDigit())
 			} else if isChar(l.Input[l.Pos]) {
 				str := l.readIdent()
-				tok = token.New(token.IDENT, str)
+				tt, ok := keywords[str]
+				if ok {
+					tok = token.New(tt, str)
+				} else {
+					tok = token.New(token.IDENT, str)
+				}
 			}
 		}
 
