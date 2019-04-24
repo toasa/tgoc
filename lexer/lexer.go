@@ -40,6 +40,16 @@ func (l *Lexer) Analyze() {
 			tok = token.New(token.DIV, "/")
 		case '%':
 			tok = token.New(token.REM, "%")
+		case '<':
+			if l.Input[l.Pos+1] == '<' {
+				l.Pos++
+				tok = token.New(token.LSHIFT, "<<")
+			}
+		case '>':
+			if l.Input[l.Pos+1] == '>' {
+				l.Pos++
+				tok = token.New(token.RSHIFT, ">>")
+			}
 		case '(':
 			tok = token.New(token.LPAREN, "(")
 		case ')':

@@ -47,6 +47,12 @@ func genExpr(expr ast.Node) {
 			fmt.Printf("    xor rdx, rdx\n")
 			fmt.Printf("    div rdi\n")
 			fmt.Printf("	mov rax, rdx\n")
+		case "<<":
+			fmt.Printf("	mov rcx, rdi\n")
+			fmt.Printf("	shl rax, cl\n")
+		case ">>":
+			fmt.Printf("	mov rcx, rdi\n")
+			fmt.Printf("	sar rax, cl\n")
 		}
 		fmt.Printf("	push rax\n")
 		return

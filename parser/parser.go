@@ -67,17 +67,13 @@ func (p *Parser) parseUnary() ast.Expr {
 func (p *Parser) parseMul() ast.Expr {
 	lhs := p.parseUnary()
 
-	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) || p.curTokenIs(token.REM) {
+	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) || p.curTokenIs(token.REM) ||
+		p.curTokenIs(token.LSHIFT) || p.curTokenIs(token.RSHIFT) {
+
 		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseUnary()
-		if op == "*" {
-			lhs = &ast.BinaryExpr{Op: "*", Lhs: lhs, Rhs: rhs}
-		} else if op == "/" {
-			lhs = &ast.BinaryExpr{Op: "/", Lhs: lhs, Rhs: rhs}
-		} else if op == "%" {
-			lhs = &ast.BinaryExpr{Op: "%", Lhs: lhs, Rhs: rhs}
-		}
+		lhs = &ast.BinaryExpr{Op: op, Lhs: lhs, Rhs: rhs}
 	}
 
 	return lhs

@@ -11,6 +11,8 @@ const (
 	MUL       = "MUL"       // '*'
 	DIV       = "DIV"       // '/'
 	REM       = "REM"       // '%'
+	LSHIFT    = "LSHIFT"    // '<<'
+	RSHIFT    = "RSHIFT"    // '>>'
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
 	IDENT     = "IDENT"     // abc, toasa
