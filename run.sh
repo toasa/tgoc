@@ -47,4 +47,10 @@ run "a := 1; b := 1; c := a + b; d := b + c; return d; e := c + d; e;" 3
 
 run "a := 2 * 3; return a; b := 40;" 6
 
+run "+10" 10
+run "-2 + 6;" 4
+run "-(10 - 16)" 6
+run "-3*+5*-2" 30
+run "a := -20; return -a;" 20
+
 echo "OK"

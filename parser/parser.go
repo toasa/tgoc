@@ -50,13 +50,27 @@ func (p *Parser) parseIdent() ast.Expr {
 	}
 }
 
+func (p *Parser) parseUnary() ast.Expr {
+	var lhs ast.Expr
+	if p.curTokenIs(token.SUB) {
+		p.nextToken()
+		lhs = &ast.UnaryExpr{Op: "-", Expr: p.parseIdent()}
+	} else {
+		if p.curTokenIs(token.ADD) {
+			p.nextToken()
+		}
+		lhs = p.parseIdent()
+	}
+	return lhs
+}
+
 func (p *Parser) parseMul() ast.Expr {
-	lhs := p.parseIdent()
+	lhs := p.parseUnary()
 
 	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) || p.curTokenIs(token.REM) {
 		op := p.curToken().Literal
 		p.nextToken()
-		rhs := p.parseIdent()
+		rhs := p.parseUnary()
 		if op == "*" {
 			lhs = &ast.BinaryExpr{Op: "*", Lhs: lhs, Rhs: rhs}
 		} else if op == "/" {
@@ -157,11 +171,9 @@ func (p *Parser) parseStmt() ast.Stmt {
 }
 
 func (p *Parser) Parse() []ast.Stmt {
-
 	for !p.curTokenIs(token.EOF) {
 		p.Stmts = append(p.Stmts, p.parseStmt())
 	}
-
 	return p.Stmts
 }
 

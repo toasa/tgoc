@@ -83,6 +83,16 @@ func (be *BinaryExpr) String() string {
 }
 func (be *BinaryExpr) exprNode() {}
 
+type UnaryExpr struct {
+	Op   string
+	Expr Expr
+}
+
+func (ue *UnaryExpr) String() string {
+	return ue.Op + ue.Expr.String()
+}
+func (ue *UnaryExpr) exprNode() {}
+
 type IntLit struct {
 	Val int
 }

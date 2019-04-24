@@ -51,6 +51,15 @@ func genExpr(expr ast.Node) {
 		fmt.Printf("	push rax\n")
 		return
 
+	case *ast.UnaryExpr:
+		genExpr(expr.Expr)
+		fmt.Printf("    pop rax\n")
+		// For now there is only one unary operator; '-' ,
+		// so I only have to invert sign.
+		fmt.Printf("	neg rax\n")
+		fmt.Printf("	push rax \n")
+		return
+
 	case *ast.Ident:
 		os, ok := offsets[expr.Name]
 		utils.Assert(ok, "undefined identifier")
