@@ -49,6 +49,9 @@ func (l *Lexer) Analyze() {
 			if l.Input[l.Pos+1] == '<' {
 				l.Pos++
 				tok = token.New(token.LSHIFT, "<<")
+			} else if l.Input[l.Pos+1] == '=' {
+				l.Pos++
+				tok = token.New(token.LTE, "<=")
 			} else {
 				tok = token.New(token.LT, "<")
 			}
@@ -56,6 +59,9 @@ func (l *Lexer) Analyze() {
 			if l.Input[l.Pos+1] == '>' {
 				l.Pos++
 				tok = token.New(token.RSHIFT, ">>")
+			} else if l.Input[l.Pos+1] == '=' {
+				l.Pos++
+				tok = token.New(token.GTE, ">=")
 			} else {
 				tok = token.New(token.GT, ">")
 			}

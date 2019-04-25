@@ -15,6 +15,8 @@ const (
 	RSHIFT    = "RSHIFT"    // '>>'
 	LT        = "LT"        // '<'
 	GT        = "GT"        // '>'
+	LTE       = "LTE"       // '<='
+	GTE       = "GTE"       // '>='
 	EQ        = "EQ"        // '=='
 	NQ        = "NQ"        // '!='
 	LPAREN    = "LPAREN"    // '('

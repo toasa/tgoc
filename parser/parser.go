@@ -101,7 +101,8 @@ func (p *Parser) parseComparison() ast.Expr {
 	lhs := p.parseAdd()
 
 	for p.curTokenIs(token.EQ) || p.curTokenIs(token.NQ) ||
-		p.curTokenIs(token.LT) || p.curTokenIs(token.GT) {
+		p.curTokenIs(token.LT) || p.curTokenIs(token.GT) ||
+		p.curTokenIs(token.LTE) || p.curTokenIs(token.GTE) {
 
 		op := p.curToken().Literal
 		p.nextToken()
