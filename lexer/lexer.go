@@ -49,11 +49,15 @@ func (l *Lexer) Analyze() {
 			if l.Input[l.Pos+1] == '<' {
 				l.Pos++
 				tok = token.New(token.LSHIFT, "<<")
+			} else {
+				tok = token.New(token.LT, "<")
 			}
 		case '>':
 			if l.Input[l.Pos+1] == '>' {
 				l.Pos++
 				tok = token.New(token.RSHIFT, ">>")
+			} else {
+				tok = token.New(token.GT, ">")
 			}
 		case '=':
 			if l.Input[l.Pos+1] == '=' {

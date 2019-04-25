@@ -68,4 +68,10 @@ run "true;" 1
 run "false;" 0
 run "1; return false; 3 * 4;" 0
 
+run "1 < 20;" 1
+run "20 < 20" 0
+run "20 < 1" 0
+run "1 > 20;" 0
+run "20 > 1" 1
+
 echo "OK"

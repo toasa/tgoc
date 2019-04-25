@@ -100,7 +100,9 @@ func (p *Parser) parseAdd() ast.Expr {
 func (p *Parser) parseComparison() ast.Expr {
 	lhs := p.parseAdd()
 
-	for p.curTokenIs(token.EQ) || p.curTokenIs(token.NQ) {
+	for p.curTokenIs(token.EQ) || p.curTokenIs(token.NQ) ||
+		p.curTokenIs(token.LT) || p.curTokenIs(token.GT) {
+
 		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseAdd()

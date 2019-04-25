@@ -65,6 +65,14 @@ func genExpr(expr ast.Node) {
 			fmt.Printf("	movzx rax, al\n")
 			// 0000 => 0001, 0001 => 0000
 			fmt.Printf("	xor rax, 1\n")
+		case "<":
+			fmt.Printf("	cmp rax, rdi\n")
+			fmt.Printf("	setl al\n")
+			fmt.Printf("	movzx rax, al\n")
+		case ">":
+			fmt.Printf("	cmp rax, rdi\n")
+			fmt.Printf("	setg al\n")
+			fmt.Printf("	movzx rax, al\n")
 		}
 		fmt.Printf("	push rax\n")
 		return

@@ -13,6 +13,8 @@ const (
 	REM       = "REM"       // '%'
 	LSHIFT    = "LSHIFT"    // '<<'
 	RSHIFT    = "RSHIFT"    // '>>'
+	LT        = "LT"        // '<'
+	GT        = "GT"        // '>'
 	EQ        = "EQ"        // '=='
 	NQ        = "NQ"        // '!='
 	LPAREN    = "LPAREN"    // '('
