@@ -23,6 +23,7 @@ const (
 	OR        = "OR"        // '||'
 	NOT       = "NOT"       // '!'
 	IF        = "IF"        // 'if'
+	ELSE      = "ELSE"      // 'ELSE'
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
 	LBRACE    = "LBRACE"    // '{'

@@ -14,6 +14,7 @@ type Lexer struct {
 var keywords map[string]token.TokenType = map[string]token.TokenType{
 	"return": token.RETURN,
 	"if":     token.IF,
+	"else":   token.ELSE,
 }
 
 var predeclaredIdents map[string]token.TokenType = map[string]token.TokenType{

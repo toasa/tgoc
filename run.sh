@@ -93,6 +93,8 @@ run "!(20 >= 10*3)" 1
 
 run "if true {20;}" 20
 run "if (1*3<=2+4) {return 10;} 20;" 10
+run "if true {20;} else {30;}" 20
+run "if false {20;} else {30;}" 30
 
 
 echo "OK"

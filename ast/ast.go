@@ -62,8 +62,9 @@ func (rs *ReturnStmt) String() string {
 func (rs *ReturnStmt) stmtNode() {}
 
 type IfStmt struct {
-	Cond  Expr
-	Stmts []Stmt
+	Cond Expr
+	Cons []Stmt
+	Alt  []Stmt
 }
 
 func (is *IfStmt) String() string {
@@ -72,10 +73,18 @@ func (is *IfStmt) String() string {
 	out.WriteString("if ")
 	out.WriteString(is.Cond.String())
 	out.WriteString("{")
-	for _, stmt := range is.Stmts {
+	for _, stmt := range is.Cons {
 		out.WriteString(stmt.String())
 	}
 	out.WriteString("}")
+
+	if is.Alt != nil {
+		out.WriteString("{")
+		for _, stmt := range is.Alt {
+			out.WriteString(stmt.String())
+		}
+		out.WriteString("}")
+	}
 
 	return out.String()
 }

@@ -186,8 +186,13 @@ func (p *Parser) parseBlockStmt() []ast.Stmt {
 func (p *Parser) parseIfStmt() ast.Stmt {
 	p.nextToken()
 	cond := p.parseExpr()
-	stmts := p.parseBlockStmt()
-	return &ast.IfStmt{Cond: cond, Stmts: stmts}
+	cons := p.parseBlockStmt()
+	var alt []ast.Stmt = nil
+	if p.curTokenIs(token.ELSE) {
+		p.nextToken()
+		alt = p.parseBlockStmt()
+	}
+	return &ast.IfStmt{Cond: cond, Cons: cons, Alt: alt}
 }
 
 func (p *Parser) parseStmt() ast.Stmt {

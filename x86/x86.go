@@ -156,9 +156,16 @@ func genStmts(stmts []ast.Stmt) {
 			genExpr(stmt.Cond)
 			fmt.Printf("	pop rax\n")
 			fmt.Printf("	cmp rax, 0\n")
-			fmt.Printf("	je .L0001\n")
-			genStmts(stmt.Stmts)
-			fmt.Printf(".L0001:\n")
+			fmt.Printf("	je .L0000\n")
+			genStmts(stmt.Cons)
+			if stmt.Alt != nil {
+				fmt.Printf("	jmp .L0001\n")
+				fmt.Printf(".L0000:\n")
+				genStmts(stmt.Alt)
+				fmt.Printf(".L0001:\n")
+			} else {
+				fmt.Printf(".L0000:\n")
+			}
 		}
 	}
 }
