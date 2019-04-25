@@ -45,6 +45,12 @@ func (p *Parser) parseIdent() ast.Expr {
 		utils.Assert(ok, fmt.Sprintf("undeclared identifier: %s", p.curToken().Literal))
 		p.nextToken()
 		return ident
+	} else if p.curTokenIs(token.TRUE) {
+		p.nextToken()
+		return &ast.IntLit{Val: 1}
+	} else if p.curTokenIs(token.FALSE) {
+		p.nextToken()
+		return &ast.IntLit{Val: 0}
 	} else {
 		return p.parseTerm()
 	}

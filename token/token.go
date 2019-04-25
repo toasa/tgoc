@@ -18,6 +18,8 @@ const (
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
 	IDENT     = "IDENT"     // abc, toasa
+	TRUE      = "TRUE"      // 'true'
+	FALSE     = "FALSE"     // 'false'
 	SVDECL    = "SVDECL"    // ':=' Short Var Declaration
 	SEMICOLON = "SEMICOLON" // ';'
 	RETURN    = "RETURN"    // 'return'

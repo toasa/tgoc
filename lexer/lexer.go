@@ -15,6 +15,11 @@ var keywords map[string]token.TokenType = map[string]token.TokenType{
 	"return": token.RETURN,
 }
 
+var predeclaredIdents map[string]token.TokenType = map[string]token.TokenType{
+	"true":  token.TRUE,
+	"false": token.FALSE,
+}
+
 // New lexer create
 func New(input string) *Lexer {
 	t := []token.Token{}
@@ -82,9 +87,17 @@ func (l *Lexer) Analyze() {
 				str := l.readIdent()
 				tt, ok := keywords[str]
 				if ok {
+					// keyword
 					tok = token.New(tt, str)
 				} else {
-					tok = token.New(token.IDENT, str)
+					tt, ok = predeclaredIdents[str]
+					if ok {
+						// predeclared identifier
+						tok = token.New(tt, str)
+					} else {
+						// identifier
+						tok = token.New(token.IDENT, str)
+					}
 				}
 			}
 		}

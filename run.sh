@@ -64,4 +64,8 @@ run "4 / 2 != 2" 0
 run "4 / 2 == 2" 1
 run "a:=10; a!=11;" 1
 
+run "true;" 1
+run "false;" 0
+run "1; return false; 3 * 4;" 0
+
 echo "OK"
