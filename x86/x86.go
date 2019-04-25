@@ -15,10 +15,14 @@ var varCount int
 // The number of total identifier
 var varNum int
 
+// To assign a unique number to a label.
+var labelCount int
+
 func initi(n int) {
 	offsets = map[string]int{}
 	varCount = 1
 	varNum = n
+	labelCount = 0
 }
 
 func genExpr(expr ast.Node) {
@@ -156,16 +160,21 @@ func genStmts(stmts []ast.Stmt) {
 			genExpr(stmt.Cond)
 			fmt.Printf("	pop rax\n")
 			fmt.Printf("	cmp rax, 0\n")
-			fmt.Printf("	je .L0000\n")
+
+			lAlt := makeLabel()
+
+			fmt.Printf("	je .L%s\n", lAlt)
 			genStmts(stmt.Cons)
 			if stmt.Alt != nil {
-				fmt.Printf("	jmp .L0001\n")
-				fmt.Printf(".L0000:\n")
+				lEnd := makeLabel()
+				fmt.Printf("	jmp .L%s\n", lEnd)
+				fmt.Printf(".L%s:\n", lAlt)
 				genStmts(stmt.Alt)
-				fmt.Printf(".L0001:\n")
+				fmt.Printf(".L%s:\n", lEnd)
 			} else {
-				fmt.Printf(".L0000:\n")
+				fmt.Printf(".L%s:\n", lAlt)
 			}
+
 		}
 	}
 }
@@ -184,4 +193,10 @@ func Gen(stmts []ast.Stmt, varNum int) {
 	fmt.Printf("	mov rsp, rbp\n")
 	fmt.Printf("	pop rbp\n")
 	fmt.Printf("	ret\n")
+}
+
+func makeLabel() string {
+	l := fmt.Sprintf("%04d", labelCount)
+	labelCount++
+	return l
 }
