@@ -61,6 +61,9 @@ func (p *Parser) parseUnary() ast.Expr {
 	if p.curTokenIs(token.SUB) {
 		p.nextToken()
 		lhs = &ast.UnaryExpr{Op: "-", Expr: p.parseIdent()}
+	} else if p.curTokenIs(token.NOT) {
+		p.nextToken()
+		lhs = &ast.UnaryExpr{Op: "!", Expr: p.parseIdent()}
 	} else {
 		if p.curTokenIs(token.ADD) {
 			p.nextToken()

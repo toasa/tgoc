@@ -21,6 +21,7 @@ const (
 	NQ        = "NQ"        // '!='
 	AND       = "AND"       // "&&"
 	OR        = "OR"        // "||"
+	NOT       = "NOT"       // "!"
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
 	IDENT     = "IDENT"     // abc, toasa

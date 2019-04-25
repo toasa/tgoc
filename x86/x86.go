@@ -109,9 +109,13 @@ func genExpr(expr ast.Node) {
 	case *ast.UnaryExpr:
 		genExpr(expr.Expr)
 		fmt.Printf("    pop rax\n")
-		// For now there is only one unary operator; '-' ,
-		// so I only have to invert sign.
-		fmt.Printf("	neg rax\n")
+
+		switch expr.Op {
+		case "-":
+			fmt.Printf("	neg rax\n")
+		case "!":
+			fmt.Printf("	xor rax, 1\n")
+		}
 		fmt.Printf("	push rax \n")
 
 	case *ast.Ident:

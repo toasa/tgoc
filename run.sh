@@ -85,5 +85,11 @@ run "1 && 0" 0
 run "(1 < 20) && false" 0
 run "true && 1" 1
 
+run "!0" 1
+run "!1" 0
+run "!true" 0
+run "!false" 1
+run "!(20 >= 10*3)" 1
+
 
 echo "OK"
