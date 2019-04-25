@@ -81,6 +81,10 @@ func genExpr(expr ast.Node) {
 			fmt.Printf("	cmp rax, rdi\n")
 			fmt.Printf("	setge al\n")
 			fmt.Printf("	movzx rax, al\n")
+		case "&&":
+			fmt.Printf("	and rax, rdi\n")
+		case "||":
+			fmt.Printf("	or rax, rdi\n")
 		}
 		fmt.Printf("	push rax\n")
 		return

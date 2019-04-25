@@ -30,7 +30,7 @@ func (p *Parser) parseTerm() ast.Expr {
 	}
 	if p.curTokenIs(token.LPAREN) {
 		p.nextToken()
-		node := p.parseAdd()
+		node := p.parseOr()
 		utils.Assert(p.curTokenIs(token.RPAREN), fmt.Sprintf("expected RPAREN, but got %s", p.curToken().Literal))
 		p.nextToken()
 		return node
@@ -112,24 +112,28 @@ func (p *Parser) parseComparison() ast.Expr {
 	return lhs
 }
 
-func printTree(node ast.Expr, tab int) {
-	be, ok := node.(*ast.BinaryExpr)
-	if ok {
-		printTree(be.Lhs, tab+4)
-		fmt.Println(strings.Repeat(" ", tab), be.Op)
-		printTree(be.Rhs, tab+4)
-		return
+func (p *Parser) parseAnd() ast.Expr {
+	lhs := p.parseComparison()
+	for p.curTokenIs(token.AND) {
+		p.nextToken()
+		rhs := p.parseComparison()
+		lhs = &ast.BinaryExpr{Op: "&&", Lhs: lhs, Rhs: rhs}
 	}
+	return lhs
+}
 
-	il, ok := node.(*ast.IntLit)
-	if ok {
-		fmt.Println(strings.Repeat(" ", tab), il.Val)
+func (p *Parser) parseOr() ast.Expr {
+	lhs := p.parseAnd()
+	for p.curTokenIs(token.OR) {
+		p.nextToken()
+		rhs := p.parseAnd()
+		lhs = &ast.BinaryExpr{Op: "||", Lhs: lhs, Rhs: rhs}
 	}
-	return
+	return lhs
 }
 
 func (p *Parser) parseExpr() ast.Expr {
-	lhs := p.parseComparison()
+	lhs := p.parseOr()
 	//printTree(lhs, 0)
 	return lhs
 }
@@ -211,4 +215,20 @@ func (p *Parser) nextToken() {
 		return
 	}
 	p.Pos++
+}
+
+func printTree(node ast.Expr, tab int) {
+	be, ok := node.(*ast.BinaryExpr)
+	if ok {
+		printTree(be.Lhs, tab+4)
+		fmt.Println(strings.Repeat(" ", tab), be.Op)
+		printTree(be.Rhs, tab+4)
+		return
+	}
+
+	il, ok := node.(*ast.IntLit)
+	if ok {
+		fmt.Println(strings.Repeat(" ", tab), il.Val)
+	}
+	return
 }

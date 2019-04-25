@@ -78,4 +78,12 @@ run "4 <= 2" 0
 run "10 <= 10" 1
 run "5 >= 10" 0
 
+run "1 || 0" 1
+run "(1 < 20) || false" 1
+run "true || 1" 1
+run "1 && 0" 0
+run "(1 < 20) && false" 0
+run "true && 1" 1
+
+
 echo "OK"

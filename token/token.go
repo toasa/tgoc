@@ -19,6 +19,8 @@ const (
 	GTE       = "GTE"       // '>='
 	EQ        = "EQ"        // '=='
 	NQ        = "NQ"        // '!='
+	AND       = "AND"       // "&&"
+	OR        = "OR"        // "||"
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
 	IDENT     = "IDENT"     // abc, toasa
