@@ -47,10 +47,10 @@ func (p *Parser) parseIdent() ast.Expr {
 		return ident
 	} else if p.curTokenIs(token.TRUE) {
 		p.nextToken()
-		return &ast.IntLit{Val: 1}
+		return &ast.Boolean{Val: true}
 	} else if p.curTokenIs(token.FALSE) {
 		p.nextToken()
-		return &ast.IntLit{Val: 0}
+		return &ast.Boolean{Val: false}
 	} else {
 		return p.parseTerm()
 	}
@@ -107,7 +107,7 @@ func (p *Parser) parseComparison() ast.Expr {
 		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseAdd()
-		lhs = &ast.BinaryExpr{Op: op, Lhs: lhs, Rhs: rhs}
+		lhs = &ast.LogicalExpr{Op: op, Lhs: lhs, Rhs: rhs}
 	}
 	return lhs
 }
@@ -117,7 +117,7 @@ func (p *Parser) parseAnd() ast.Expr {
 	for p.curTokenIs(token.AND) {
 		p.nextToken()
 		rhs := p.parseComparison()
-		lhs = &ast.BinaryExpr{Op: "&&", Lhs: lhs, Rhs: rhs}
+		lhs = &ast.LogicalExpr{Op: "&&", Lhs: lhs, Rhs: rhs}
 	}
 	return lhs
 }
@@ -127,7 +127,7 @@ func (p *Parser) parseOr() ast.Expr {
 	for p.curTokenIs(token.OR) {
 		p.nextToken()
 		rhs := p.parseAnd()
-		lhs = &ast.BinaryExpr{Op: "||", Lhs: lhs, Rhs: rhs}
+		lhs = &ast.LogicalExpr{Op: "||", Lhs: lhs, Rhs: rhs}
 	}
 	return lhs
 }

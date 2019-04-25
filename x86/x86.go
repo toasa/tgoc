@@ -26,35 +26,20 @@ func genExpr(expr ast.Node) {
 	switch expr := expr.(type) {
 	case *ast.IntLit:
 		fmt.Printf("	push %d\n", expr.Val)
-		return
-	case *ast.BinaryExpr:
+	case *ast.Boolean:
+		if expr.Val {
+			fmt.Printf("	push 1\n")
+		} else {
+			fmt.Printf("	push 0\n")
+		}
+	case *ast.LogicalExpr:
 		genExpr(expr.Lhs)
 		genExpr(expr.Rhs)
 
 		fmt.Printf("	pop rdi\n")
 		fmt.Printf("	pop rax\n")
+
 		switch expr.Op {
-		case "+":
-			fmt.Printf("	add rax, rdi\n")
-		case "-":
-			fmt.Printf("	sub rax, rdi\n")
-		case "*":
-			fmt.Printf("	mul rdi\n")
-		case "/":
-			fmt.Printf("    xor rdx, rdx\n")
-			fmt.Printf("    div rdi\n")
-		case "%":
-			fmt.Printf("    xor rdx, rdx\n")
-			fmt.Printf("    div rdi\n")
-			fmt.Printf("	mov rax, rdx\n")
-		case "<<":
-			// To change the cl value, changed the rcx value.
-			// cl is lower 8 bit register of rcx register.
-			fmt.Printf("	mov rcx, rdi\n")
-			fmt.Printf("	shl rax, cl\n")
-		case ">>":
-			fmt.Printf("	mov rcx, rdi\n")
-			fmt.Printf("	sar rax, cl\n")
 		case "==":
 			fmt.Printf("	cmp rax, rdi\n")
 			fmt.Printf("	sete al\n")
@@ -87,7 +72,39 @@ func genExpr(expr ast.Node) {
 			fmt.Printf("	or rax, rdi\n")
 		}
 		fmt.Printf("	push rax\n")
-		return
+
+	case *ast.BinaryExpr:
+		genExpr(expr.Lhs)
+		genExpr(expr.Rhs)
+
+		fmt.Printf("	pop rdi\n")
+		fmt.Printf("	pop rax\n")
+
+		switch expr.Op {
+		case "+":
+			fmt.Printf("	add rax, rdi\n")
+		case "-":
+			fmt.Printf("	sub rax, rdi\n")
+		case "*":
+			fmt.Printf("	mul rdi\n")
+		case "/":
+			fmt.Printf("    xor rdx, rdx\n")
+			fmt.Printf("    div rdi\n")
+		case "%":
+			fmt.Printf("    xor rdx, rdx\n")
+			fmt.Printf("    div rdi\n")
+			fmt.Printf("	mov rax, rdx\n")
+		case "<<":
+			// To change the cl value, changed the rcx value.
+			// cl is lower 8 bit register of rcx register.
+			fmt.Printf("	mov rcx, rdi\n")
+			fmt.Printf("	shl rax, cl\n")
+		case ">>":
+			fmt.Printf("	mov rcx, rdi\n")
+			fmt.Printf("	sar rax, cl\n")
+
+		}
+		fmt.Printf("	push rax\n")
 
 	case *ast.UnaryExpr:
 		genExpr(expr.Expr)
@@ -96,12 +113,10 @@ func genExpr(expr ast.Node) {
 		// so I only have to invert sign.
 		fmt.Printf("	neg rax\n")
 		fmt.Printf("	push rax \n")
-		return
 
 	case *ast.Ident:
 		os, ok := offsets[expr.Name]
 		utils.Assert(ok, "undefined identifier")
-
 		fmt.Printf("	mov rax, QWORD PTR [rbp - %d]\n", 8*os)
 		fmt.Printf("	push rax\n")
 	}

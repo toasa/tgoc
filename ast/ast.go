@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
 )
 
@@ -93,6 +94,17 @@ func (ue *UnaryExpr) String() string {
 }
 func (ue *UnaryExpr) exprNode() {}
 
+type LogicalExpr struct {
+	Op  string
+	Lhs Expr
+	Rhs Expr
+}
+
+func (le *LogicalExpr) String() string {
+	return fmt.Sprintln(le.Lhs.String(), le.Op, le.Rhs.String())
+}
+func (le *LogicalExpr) exprNode() {}
+
 type IntLit struct {
 	Val int
 }
@@ -101,6 +113,18 @@ func (il *IntLit) String() string {
 	return strconv.Itoa(il.Val)
 }
 func (il *IntLit) exprNode() {}
+
+type Boolean struct {
+	Val bool
+}
+
+func (b *Boolean) String() string {
+	if b.Val {
+		return "true"
+	}
+	return "false"
+}
+func (b *Boolean) exprNode() {}
 
 type Ident struct {
 	Name string
