@@ -50,6 +50,16 @@ func (l *Lexer) Analyze() {
 				l.Pos++
 				tok = token.New(token.RSHIFT, ">>")
 			}
+		case '=':
+			if l.Input[l.Pos+1] == '=' {
+				l.Pos++
+				tok = token.New(token.EQ, "==")
+			}
+		case '!':
+			if l.Input[l.Pos+1] == '=' {
+				l.Pos++
+				tok = token.New(token.NQ, "!=")
+			}
 		case '(':
 			tok = token.New(token.LPAREN, "(")
 		case ')':

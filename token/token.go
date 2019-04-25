@@ -13,6 +13,8 @@ const (
 	REM       = "REM"       // '%'
 	LSHIFT    = "LSHIFT"    // '<<'
 	RSHIFT    = "RSHIFT"    // '>>'
+	EQ        = "EQ"        // '=='
+	NQ        = "NQ"        // '!='
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
 	IDENT     = "IDENT"     // abc, toasa

@@ -48,11 +48,23 @@ func genExpr(expr ast.Node) {
 			fmt.Printf("    div rdi\n")
 			fmt.Printf("	mov rax, rdx\n")
 		case "<<":
+			// To change the cl value, changed the rcx value.
+			// cl is lower 8 bit register of rcx register.
 			fmt.Printf("	mov rcx, rdi\n")
 			fmt.Printf("	shl rax, cl\n")
 		case ">>":
 			fmt.Printf("	mov rcx, rdi\n")
 			fmt.Printf("	sar rax, cl\n")
+		case "==":
+			fmt.Printf("	cmp rax, rdi\n")
+			fmt.Printf("	sete al\n")
+			fmt.Printf("	movzx rax, al\n")
+		case "!=":
+			fmt.Printf("	cmp rax, rdi\n")
+			fmt.Printf("	sete al\n")
+			fmt.Printf("	movzx rax, al\n")
+			// 0000 => 0001, 0001 => 0000
+			fmt.Printf("	xor rax, 1\n")
 		}
 		fmt.Printf("	push rax\n")
 		return
