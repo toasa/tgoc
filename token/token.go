@@ -19,11 +19,14 @@ const (
 	GTE       = "GTE"       // '>='
 	EQ        = "EQ"        // '=='
 	NQ        = "NQ"        // '!='
-	AND       = "AND"       // "&&"
-	OR        = "OR"        // "||"
-	NOT       = "NOT"       // "!"
+	AND       = "AND"       // '&&'
+	OR        = "OR"        // '||'
+	NOT       = "NOT"       // '!'
+	IF        = "IF"        // 'if'
 	LPAREN    = "LPAREN"    // '('
 	RPAREN    = "RPAREN"    // ')'
+	LBRACE    = "LBRACE"    // '{'
+	RBRACE    = "RBRACE"    // '}'
 	IDENT     = "IDENT"     // abc, toasa
 	TRUE      = "TRUE"      // 'true'
 	FALSE     = "FALSE"     // 'false'

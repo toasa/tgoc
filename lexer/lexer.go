@@ -13,6 +13,7 @@ type Lexer struct {
 
 var keywords map[string]token.TokenType = map[string]token.TokenType{
 	"return": token.RETURN,
+	"if":     token.IF,
 }
 
 var predeclaredIdents map[string]token.TokenType = map[string]token.TokenType{
@@ -91,6 +92,10 @@ func (l *Lexer) Analyze() {
 			tok = token.New(token.LPAREN, "(")
 		case ')':
 			tok = token.New(token.RPAREN, ")")
+		case '{':
+			tok = token.New(token.LBRACE, "{")
+		case '}':
+			tok = token.New(token.RBRACE, "}")
 		case ':':
 			if l.Input[l.Pos+1] == '=' {
 				l.Pos++

@@ -152,6 +152,13 @@ func genStmts(stmts []ast.Stmt) {
 			fmt.Printf("	pop rbp\n")
 			fmt.Printf("	ret\n")
 			return
+		case *ast.IfStmt:
+			genExpr(stmt.Cond)
+			fmt.Printf("	pop rax\n")
+			fmt.Printf("	cmp rax, 0\n")
+			fmt.Printf("	je .L0001\n")
+			genStmts(stmt.Stmts)
+			fmt.Printf(".L0001:\n")
 		}
 	}
 }

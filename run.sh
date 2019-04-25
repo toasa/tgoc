@@ -91,5 +91,8 @@ run "!true" 0
 run "!false" 1
 run "!(20 >= 10*3)" 1
 
+run "if true {20;}" 20
+run "if (1*3<=2+4) {return 10;} 20;" 10
+
 
 echo "OK"

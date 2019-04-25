@@ -172,6 +172,24 @@ func (p *Parser) parseReturnStmt() ast.Stmt {
 	return &ast.ReturnStmt{Expr: p.parseExpr()}
 }
 
+func (p *Parser) parseBlockStmt() []ast.Stmt {
+	p.expectToken(token.LBRACE)
+
+	bs := []ast.Stmt{}
+	for !p.curTokenIs(token.RBRACE) {
+		bs = append(bs, p.parseStmt())
+	}
+	p.nextToken()
+	return bs
+}
+
+func (p *Parser) parseIfStmt() ast.Stmt {
+	p.nextToken()
+	cond := p.parseExpr()
+	stmts := p.parseBlockStmt()
+	return &ast.IfStmt{Cond: cond, Stmts: stmts}
+}
+
 func (p *Parser) parseStmt() ast.Stmt {
 	var stmt ast.Stmt
 
@@ -179,6 +197,8 @@ func (p *Parser) parseStmt() ast.Stmt {
 		stmt = p.parseAssignStmt()
 	} else if p.curTokenIs(token.RETURN) {
 		stmt = p.parseReturnStmt()
+	} else if p.curTokenIs(token.IF) {
+		stmt = p.parseIfStmt()
 	} else {
 		stmt = p.parseExprStmt()
 	}
@@ -218,6 +238,14 @@ func (p *Parser) nextToken() {
 		return
 	}
 	p.Pos++
+}
+
+func (p *Parser) expectToken(tt token.TokenType) {
+	if p.curTokenIs(tt) {
+		p.nextToken()
+		return
+	}
+	panic(fmt.Sprintf("expected %s, but got %s", tt, p.curToken().Type))
 }
 
 func printTree(node ast.Expr, tab int) {

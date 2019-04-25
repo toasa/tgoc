@@ -61,6 +61,26 @@ func (rs *ReturnStmt) String() string {
 }
 func (rs *ReturnStmt) stmtNode() {}
 
+type IfStmt struct {
+	Cond  Expr
+	Stmts []Stmt
+}
+
+func (is *IfStmt) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("if ")
+	out.WriteString(is.Cond.String())
+	out.WriteString("{")
+	for _, stmt := range is.Stmts {
+		out.WriteString(stmt.String())
+	}
+	out.WriteString("}")
+
+	return out.String()
+}
+func (is *IfStmt) stmtNode() {}
+
 // --------------------------------------------------------
 // - Expression
 // --------------------------------------------------------
