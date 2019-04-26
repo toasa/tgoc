@@ -19,8 +19,8 @@ const (
 	GTE       = "GTE"       // '>='
 	EQ        = "EQ"        // '=='
 	NQ        = "NQ"        // '!='
-	AND       = "AND"       // '&&'
-	OR        = "OR"        // '||'
+	CAND      = "CAND"      // '&&': conditional and
+	COR       = "COR"       // '||': conditional or
 	NOT       = "NOT"       // '!'
 	IF        = "IF"        // 'if'
 	ELSE      = "ELSE"      // 'ELSE'

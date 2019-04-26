@@ -30,7 +30,7 @@ func (p *Parser) parseTerm() ast.Expr {
 	}
 	if p.curTokenIs(token.LPAREN) {
 		p.nextToken()
-		node := p.parseOr()
+		node := p.parseExpr()
 		utils.Assert(p.curTokenIs(token.RPAREN), fmt.Sprintf("expected RPAREN, but got %s", p.curToken().Literal))
 		p.nextToken()
 		return node
@@ -115,9 +115,9 @@ func (p *Parser) parseComparison() ast.Expr {
 	return lhs
 }
 
-func (p *Parser) parseAnd() ast.Expr {
+func (p *Parser) parseCAnd() ast.Expr {
 	lhs := p.parseComparison()
-	for p.curTokenIs(token.AND) {
+	for p.curTokenIs(token.CAND) {
 		p.nextToken()
 		rhs := p.parseComparison()
 		lhs = &ast.LogicalExpr{Op: "&&", Lhs: lhs, Rhs: rhs}
@@ -125,18 +125,18 @@ func (p *Parser) parseAnd() ast.Expr {
 	return lhs
 }
 
-func (p *Parser) parseOr() ast.Expr {
-	lhs := p.parseAnd()
-	for p.curTokenIs(token.OR) {
+func (p *Parser) parseCOr() ast.Expr {
+	lhs := p.parseCAnd()
+	for p.curTokenIs(token.COR) {
 		p.nextToken()
-		rhs := p.parseAnd()
+		rhs := p.parseCAnd()
 		lhs = &ast.LogicalExpr{Op: "||", Lhs: lhs, Rhs: rhs}
 	}
 	return lhs
 }
 
 func (p *Parser) parseExpr() ast.Expr {
-	lhs := p.parseOr()
+	lhs := p.parseCOr()
 	//printTree(lhs, 0)
 	return lhs
 }

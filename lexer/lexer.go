@@ -70,12 +70,12 @@ func (l *Lexer) Analyze() {
 		case '&':
 			if l.Input[l.Pos+1] == '&' {
 				l.Pos++
-				tok = token.New(token.AND, "&&")
+				tok = token.New(token.CAND, "&&")
 			}
 		case '|':
 			if l.Input[l.Pos+1] == '|' {
 				l.Pos++
-				tok = token.New(token.OR, "||")
+				tok = token.New(token.COR, "||")
 			}
 		case '=':
 			if l.Input[l.Pos+1] == '=' {
