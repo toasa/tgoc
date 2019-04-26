@@ -78,7 +78,8 @@ func (p *Parser) parseMul() ast.Expr {
 
 	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) ||
 		p.curTokenIs(token.REM) || p.curTokenIs(token.LSHIFT) ||
-		p.curTokenIs(token.RSHIFT) || p.curTokenIs(token.BAND) {
+		p.curTokenIs(token.RSHIFT) || p.curTokenIs(token.BAND) ||
+		p.curTokenIs(token.BCLR) {
 
 		op := p.curToken().Literal
 		p.nextToken()

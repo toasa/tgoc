@@ -71,6 +71,9 @@ func (l *Lexer) Analyze() {
 			if l.Input[l.Pos+1] == '&' {
 				l.Pos++
 				tok = token.New(token.CAND, "&&")
+			} else if l.Input[l.Pos+1] == '^' {
+				l.Pos++
+				tok = token.New(token.BCLR, "&^")
 			} else {
 				tok = token.New(token.BAND, "&")
 			}

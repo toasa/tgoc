@@ -21,6 +21,7 @@ const (
 	BAND   = "BAND"   // '&': bitwise and
 	BOR    = "BOR"    // '|': bitwise or
 	BXOR   = "BXOR"   // '^': bitwise xor
+	BCLR   = "BCLR"   // '&^': bit clear
 
 	// Yield boolean
 	LT   = "LT"   // '<'
