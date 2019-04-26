@@ -76,8 +76,9 @@ func (p *Parser) parseUnary() ast.Expr {
 func (p *Parser) parseMul() ast.Expr {
 	lhs := p.parseUnary()
 
-	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) || p.curTokenIs(token.REM) ||
-		p.curTokenIs(token.LSHIFT) || p.curTokenIs(token.RSHIFT) {
+	for p.curTokenIs(token.MUL) || p.curTokenIs(token.DIV) ||
+		p.curTokenIs(token.REM) || p.curTokenIs(token.LSHIFT) ||
+		p.curTokenIs(token.RSHIFT) || p.curTokenIs(token.BAND) {
 
 		op := p.curToken().Literal
 		p.nextToken()
@@ -91,7 +92,9 @@ func (p *Parser) parseMul() ast.Expr {
 func (p *Parser) parseAdd() ast.Expr {
 	lhs := p.parseMul()
 
-	for p.curTokenIs(token.ADD) || p.curTokenIs(token.SUB) {
+	for p.curTokenIs(token.ADD) || p.curTokenIs(token.SUB) ||
+		p.curTokenIs(token.BOR) || p.curTokenIs(token.BXOR) {
+
 		op := p.curToken().Literal
 		p.nextToken()
 		rhs := p.parseMul()

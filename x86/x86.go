@@ -106,7 +106,12 @@ func genExpr(expr ast.Node) {
 		case ">>":
 			fmt.Printf("	mov rcx, rdi\n")
 			fmt.Printf("	sar rax, cl\n")
-
+		case "&":
+			fmt.Printf("	and rax, rdi\n")
+		case "|":
+			fmt.Printf("	or rax, rdi\n")
+		case "^":
+			fmt.Printf("	xor rax, rdi\n")
 		}
 		fmt.Printf("	push rax\n")
 

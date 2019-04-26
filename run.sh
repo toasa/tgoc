@@ -96,5 +96,10 @@ run "if (1*3<=2+4) {return 10;} 20;" 10
 run "if true {20;} else {30;}" 20
 run "if false {20;} else {30;}" 30
 
+run "6 & 10" 2
+run "6 | 10" 14
+run "6 ^ 10" 12
+run "30 | 20 & 10" 30
+run "30 & 20 | 10" 30
 
 echo "OK"
