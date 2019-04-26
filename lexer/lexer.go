@@ -90,6 +90,8 @@ func (l *Lexer) Analyze() {
 			if l.Input[l.Pos+1] == '=' {
 				l.Pos++
 				tok = token.New(token.EQ, "==")
+			} else {
+				tok = token.New(token.ASSIGN, "=")
 			}
 		case '!':
 			if l.Input[l.Pos+1] == '=' {

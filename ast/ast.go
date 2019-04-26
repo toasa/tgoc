@@ -43,13 +43,24 @@ func (es *ExprStmt) String() string {
 }
 func (es *ExprStmt) stmtNode() {}
 
-type AssignStmt struct {
+type DeclStmt struct {
 	Decl Decl
 }
 
-func (as *AssignStmt) String() string {
-	return as.Decl.String()
+func (ds *DeclStmt) String() string {
+	return ds.Decl.String()
 }
+func (ds *DeclStmt) stmtNode() {}
+
+type AssignStmt struct {
+	Name string
+	Val  Expr
+}
+
+func (as *AssignStmt) String() string {
+	return ""
+}
+
 func (as *AssignStmt) stmtNode() {}
 
 type ReturnStmt struct {

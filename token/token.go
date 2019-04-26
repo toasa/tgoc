@@ -34,17 +34,20 @@ const (
 	COR  = "COR"  // '||': conditional or
 	NOT  = "NOT"  // '!'
 
-	IF   = "IF"   // 'if'
-	ELSE = "ELSE" // 'ELSE'
+	// Statement
+	IF     = "IF"     // 'if'
+	ELSE   = "ELSE"   // 'ELSE'
+	RETURN = "RETURN" // 'return'
 
 	LPAREN = "LPAREN" // '('
 	RPAREN = "RPAREN" // ')'
 	LBRACE = "LBRACE" // '{'
 	RBRACE = "RBRACE" // '}'
 
-	SVDECL    = "SVDECL"    // ':=' Short Var Declaration
+	ASSIGN = "ASSIGN" // '='
+	SVDECL = "SVDECL" // ':=' Short Var Declaration
+
 	SEMICOLON = "SEMICOLON" // ';'
-	RETURN    = "RETURN"    // 'return'
 	EOF       = "EOF"       // End of file
 )
 

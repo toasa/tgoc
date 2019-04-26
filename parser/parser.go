@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"tgoc/ast"
@@ -147,28 +148,34 @@ func (p *Parser) parseExpr() ast.Expr {
 
 func (p *Parser) parseExprStmt() ast.Stmt {
 	expr := p.parseExpr()
-	es := &ast.ExprStmt{Expr: expr}
-	return es
+	return &ast.ExprStmt{Expr: expr}
 }
 
-func (p *Parser) parseDecl() ast.Decl {
+func (p *Parser) parseDeclStmt() ast.Stmt {
 	utils.Assert(p.curTokenIs(token.IDENT), "identifier needed")
 	name := p.Tokens[p.Pos].Literal
 	p.nextToken()
 	p.nextToken()
 	val := p.parseExpr()
-	return &ast.SVDecl{Name: name, Val: val}
+
+	p.assignVal(name, val)
+	decl := &ast.SVDecl{Name: name, Val: val}
+	return &ast.DeclStmt{Decl: decl}
 }
 
 func (p *Parser) parseAssignStmt() ast.Stmt {
-	decl := p.parseDecl()
-	svd, ok := decl.(*ast.SVDecl)
-	if ok {
-		p.VarMap[svd.Name] = &ast.Ident{Name: svd.Name, Val: svd.Val}
+	name := p.Tokens[p.Pos].Literal
+	if _, ok := p.VarMap[name]; !ok {
+		fmt.Printf("Undeclared identifier: %s", name)
+		os.Exit(1)
 	}
+	p.nextToken()
+	p.nextToken()
+	val := p.parseExpr()
 
-	as := &ast.AssignStmt{Decl: decl}
-	return as
+	p.assignVal(name, val)
+
+	return &ast.AssignStmt{Name: name, Val: val}
 }
 
 func (p *Parser) parseReturnStmt() ast.Stmt {
@@ -203,6 +210,8 @@ func (p *Parser) parseStmt() ast.Stmt {
 	var stmt ast.Stmt
 
 	if p.curTokenIs(token.IDENT) && p.peepTokenIs(token.SVDECL) {
+		stmt = p.parseDeclStmt()
+	} else if p.curTokenIs(token.IDENT) && p.peepTokenIs(token.ASSIGN) {
 		stmt = p.parseAssignStmt()
 	} else if p.curTokenIs(token.RETURN) {
 		stmt = p.parseReturnStmt()
@@ -271,4 +280,8 @@ func printTree(node ast.Expr, tab int) {
 		fmt.Println(strings.Repeat(" ", tab), il.Val)
 	}
 	return
+}
+
+func (p *Parser) assignVal(name string, expr ast.Expr) {
+	p.VarMap[name] = &ast.Ident{Name: name, Val: expr}
 }

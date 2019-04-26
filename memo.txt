@@ -1,3 +1,6 @@
+This is rough memo for myself.
+
+---------------------------------------------------------------
 token.go
 * identifiers
 * keywords
@@ -15,3 +18,51 @@ ast.go
     - Operator
 * Statement
 * Built-in function
+
+---------------------------------------------------------------
+
+for stmt
+    - single cond
+        * for A { B }
+        .loop:
+            COMPILE A
+            pop rax
+            cmp rax, 0        
+            je .LXXXX
+            COMPILE B
+            jmp .loop
+        .LXXXX:
+        
+    - clause
+        * for A; B; C { D }
+            COMPILE A
+        .loop:
+            COMPILE B
+            pop rax
+            cmp rax, 0
+            je .LXXXX
+            COMPILE D
+            COMPILE C
+            jmp .loop:
+        .LXXXX:
+
+    - range clause
+
+
+---------------------------------------------------------------
+
+WANT
+EX. a := 10; a = 1 + 10; return a;
+VarMap map[string]*ast.Ident
+    a := 10;
+    &SVDecl{Name: "a", Val: 10}
+
+    AssignStmt
+    a = 1 + 10;
+    右辺をparse. 
+        文字列"a"を取得
+    左辺をparse. 
+        expr := p.parseExpr()
+
+    p.VarMap["a"] = &Ident{Name: "a", Val: expr}
+    とすればよいはず

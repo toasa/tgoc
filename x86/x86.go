@@ -155,8 +155,14 @@ func genStmts(stmts []ast.Stmt) {
 		case *ast.ExprStmt:
 			genExpr(stmt.Expr)
 			fmt.Printf("	pop rax\n")
-		case *ast.AssignStmt:
+		case *ast.DeclStmt:
 			genDecl(stmt.Decl)
+		case *ast.AssignStmt:
+			genExpr(stmt.Val)
+			fmt.Printf("	pop rax\n")
+			os, ok := offsets[stmt.Name]
+			utils.Assert(ok, "undefined identifier")
+			fmt.Printf("	mov QWORD PTR [rbp - %d], rax\n", 8*os)
 		case *ast.ReturnStmt:
 			genExpr(stmt.Expr)
 			fmt.Printf("	pop rax\n")

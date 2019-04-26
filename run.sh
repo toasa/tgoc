@@ -44,6 +44,9 @@ run "a := 20 * 2; a" 40
 run "abc := 30 + 4 * 2; xyz := abc * 2; xyz;" 76
 run "a := 1; b := 1; c := a + b; d := b + c; e := c + d; e;" 5
 run "a := 1; b := 1; c := a + b; d := b + c; return d; e := c + d; e;" 3
+run "a := 10; a = 1 + 10; return a;" 11
+run "a := 10; a = a + 10; return a;" 20
+run "a := 5; b := a * a; b = 10 + b; return b" 35
 
 run "a := 2 * 3; return a; b := 40;" 6
 
