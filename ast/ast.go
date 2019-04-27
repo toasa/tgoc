@@ -101,6 +101,26 @@ func (is *IfStmt) String() string {
 }
 func (is *IfStmt) stmtNode() {}
 
+type ForSingleStmt struct {
+	Cond  Expr
+	Stmts []Stmt
+}
+
+func (fss *ForSingleStmt) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("for ")
+	out.WriteString(fss.Cond.String())
+	out.WriteString("{")
+	for _, stmt := range fss.Stmts {
+		out.WriteString(stmt.String())
+	}
+	out.WriteString("}")
+
+	return out.String()
+}
+func (fss *ForSingleStmt) stmtNode() {}
+
 // --------------------------------------------------------
 // - Expression
 // --------------------------------------------------------

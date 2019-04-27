@@ -148,8 +148,6 @@ func genDecl(decl ast.Decl) {
 }
 
 func genStmts(stmts []ast.Stmt) {
-	fmt.Printf("	sub rsp, %d\n", varNum*8)
-
 	for _, stmt := range stmts {
 		switch stmt := stmt.(type) {
 		case *ast.ExprStmt:
@@ -188,9 +186,24 @@ func genStmts(stmts []ast.Stmt) {
 			} else {
 				fmt.Printf(".L%s:\n", lAlt)
 			}
-
+		case *ast.ForSingleStmt:
+			loop := makeLabel()
+			slipOut := makeLabel()
+			fmt.Printf(".LOOP%s:\n", loop)
+			genExpr(stmt.Cond)
+			fmt.Printf("	pop rax\n")
+			fmt.Printf("	cmp rax, 0\n")
+			fmt.Printf("	je .L%s\n", slipOut)
+			genStmts(stmt.Stmts)
+			fmt.Printf("	jmp .LOOP%s\n", loop)
+			fmt.Printf(".L%s:\n", slipOut)
 		}
 	}
+}
+
+func gen(stmts []ast.Stmt) {
+	fmt.Printf("	sub rsp, %d\n", varNum*8)
+	genStmts(stmts)
 }
 
 func Gen(stmts []ast.Stmt, varNum int) {
@@ -202,7 +215,7 @@ func Gen(stmts []ast.Stmt, varNum int) {
 	fmt.Printf("	push rbp\n")
 	fmt.Printf("	mov rbp, rsp\n")
 
-	genStmts(stmts)
+	gen(stmts)
 
 	fmt.Printf("	mov rsp, rbp\n")
 	fmt.Printf("	pop rbp\n")

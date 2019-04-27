@@ -107,4 +107,9 @@ run "10 &^ 6" 8
 run "30 | 20 & 10" 30
 run "30 & 20 | 10" 30
 
+run "a := 1; a = 2 * a; a = 2 * a; a = 2 * a; a = 2 * a; a;" 16
+run "i := 1; for i < 200 { i = i + 2; } i;" 201
+run "a := 1; for a < 100 { a = a * 2; } a;" 128
+run "i := 1; a := 10 for i < 10 { a = a + i; i = i + 1;} a;" 55
+
 echo "OK"

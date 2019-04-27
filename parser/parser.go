@@ -206,6 +206,19 @@ func (p *Parser) parseIfStmt() ast.Stmt {
 	return &ast.IfStmt{Cond: cond, Cons: cons, Alt: alt}
 }
 
+func (p *Parser) parseForSingleStmt() ast.Stmt {
+	// skip the `for` token
+	p.nextToken()
+	cond := p.parseExpr()
+	stmts := p.parseBlockStmt()
+	return &ast.ForSingleStmt{Cond: cond, Stmts: stmts}
+}
+
+func (p *Parser) parseForStmt() ast.Stmt {
+	// ForClauseとForRangeも追加する
+	return p.parseForSingleStmt()
+}
+
 func (p *Parser) parseStmt() ast.Stmt {
 	var stmt ast.Stmt
 
@@ -217,6 +230,8 @@ func (p *Parser) parseStmt() ast.Stmt {
 		stmt = p.parseReturnStmt()
 	} else if p.curTokenIs(token.IF) {
 		stmt = p.parseIfStmt()
+	} else if p.curTokenIs(token.FOR) {
+		stmt = p.parseForStmt()
 	} else {
 		stmt = p.parseExprStmt()
 	}

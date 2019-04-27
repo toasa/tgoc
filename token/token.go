@@ -38,6 +38,7 @@ const (
 	IF     = "IF"     // 'if'
 	ELSE   = "ELSE"   // 'ELSE'
 	RETURN = "RETURN" // 'return'
+	FOR    = "FOR"    // 'for'
 
 	LPAREN = "LPAREN" // '('
 	RPAREN = "RPAREN" // ')'

@@ -15,6 +15,7 @@ var keywords map[string]token.TokenType = map[string]token.TokenType{
 	"return": token.RETURN,
 	"if":     token.IF,
 	"else":   token.ELSE,
+	"for":    token.FOR,
 }
 
 var predeclaredIdents map[string]token.TokenType = map[string]token.TokenType{
