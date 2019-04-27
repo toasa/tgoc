@@ -147,57 +147,62 @@ func genDecl(decl ast.Decl) {
 	varCount++
 }
 
+func genStmt(stmt ast.Stmt) {
+	switch stmt := stmt.(type) {
+	case *ast.ExprStmt:
+		genExpr(stmt.Expr)
+		fmt.Printf("	pop rax\n")
+	case *ast.DeclStmt:
+		genDecl(stmt.Decl)
+	case *ast.AssignStmt:
+		genExpr(stmt.Val)
+		fmt.Printf("	pop rax\n")
+		os, ok := offsets[stmt.Name]
+		utils.Assert(ok, "undefined identifier")
+		fmt.Printf("	mov QWORD PTR [rbp - %d], rax\n", 8*os)
+	case *ast.ReturnStmt:
+		genExpr(stmt.Expr)
+		fmt.Printf("	pop rax\n")
+		fmt.Printf("	mov rsp, rbp\n")
+		fmt.Printf("	pop rbp\n")
+		fmt.Printf("	ret\n")
+		return
+	case *ast.IfStmt:
+		genExpr(stmt.Cond)
+		fmt.Printf("	pop rax\n")
+		fmt.Printf("	cmp rax, 0\n")
+
+		lAlt := makeLabel()
+
+		fmt.Printf("	je .L%s\n", lAlt)
+		genStmts(stmt.Cons)
+		if stmt.Alt != nil {
+			lEnd := makeLabel()
+			fmt.Printf("	jmp .L%s\n", lEnd)
+			fmt.Printf(".L%s:\n", lAlt)
+			genStmts(stmt.Alt)
+			fmt.Printf(".L%s:\n", lEnd)
+		} else {
+			fmt.Printf(".L%s:\n", lAlt)
+		}
+	case *ast.ForSingleStmt:
+		loop := makeLabel()
+		slipOut := makeLabel()
+		fmt.Printf(".LOOP%s:\n", loop)
+		genExpr(stmt.Cond)
+		fmt.Printf("	pop rax\n")
+		fmt.Printf("	cmp rax, 0\n")
+		fmt.Printf("	je .L%s\n", slipOut)
+		genStmts(stmt.Stmts)
+		fmt.Printf("	jmp .LOOP%s\n", loop)
+		fmt.Printf(".L%s:\n", slipOut)
+
+	}
+}
+
 func genStmts(stmts []ast.Stmt) {
 	for _, stmt := range stmts {
-		switch stmt := stmt.(type) {
-		case *ast.ExprStmt:
-			genExpr(stmt.Expr)
-			fmt.Printf("	pop rax\n")
-		case *ast.DeclStmt:
-			genDecl(stmt.Decl)
-		case *ast.AssignStmt:
-			genExpr(stmt.Val)
-			fmt.Printf("	pop rax\n")
-			os, ok := offsets[stmt.Name]
-			utils.Assert(ok, "undefined identifier")
-			fmt.Printf("	mov QWORD PTR [rbp - %d], rax\n", 8*os)
-		case *ast.ReturnStmt:
-			genExpr(stmt.Expr)
-			fmt.Printf("	pop rax\n")
-			fmt.Printf("	mov rsp, rbp\n")
-			fmt.Printf("	pop rbp\n")
-			fmt.Printf("	ret\n")
-			return
-		case *ast.IfStmt:
-			genExpr(stmt.Cond)
-			fmt.Printf("	pop rax\n")
-			fmt.Printf("	cmp rax, 0\n")
-
-			lAlt := makeLabel()
-
-			fmt.Printf("	je .L%s\n", lAlt)
-			genStmts(stmt.Cons)
-			if stmt.Alt != nil {
-				lEnd := makeLabel()
-				fmt.Printf("	jmp .L%s\n", lEnd)
-				fmt.Printf(".L%s:\n", lAlt)
-				genStmts(stmt.Alt)
-				fmt.Printf(".L%s:\n", lEnd)
-			} else {
-				fmt.Printf(".L%s:\n", lAlt)
-			}
-		case *ast.ForSingleStmt:
-			loop := makeLabel()
-			slipOut := makeLabel()
-			fmt.Printf(".LOOP%s:\n", loop)
-			genExpr(stmt.Cond)
-			fmt.Printf("	pop rax\n")
-			fmt.Printf("	cmp rax, 0\n")
-			fmt.Printf("	je .L%s\n", slipOut)
-			genStmts(stmt.Stmts)
-			fmt.Printf("	jmp .LOOP%s\n", loop)
-			fmt.Printf(".L%s:\n", slipOut)
-		}
+		genStmt(stmt)
 	}
 }
 
