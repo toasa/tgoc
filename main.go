@@ -9,20 +9,41 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("[USAGE] go run main.go INPUT")
-		os.Exit(1)
-	}
+	var printTokenFlg bool
+	var printParseFlg bool
+	var input string
 
-	input := os.Args[1] + "\000"
+	argc := len(os.Args)
+	if argc != 2 {
+		if argc == 3 {
+			input = os.Args[2] + "\000"
+			switch os.Args[1] {
+			case "-t":
+				printTokenFlg = true
+			case "-p":
+				printParseFlg = true
+			}
+		} else {
+			fmt.Println("[USAGE] go run main.go INPUT")
+			os.Exit(1)
+		}
+	} else {
+		input = os.Args[1] + "\000"
+	}
 
 	l := lexer.New(input)
 	l.Analyze()
 
-	// printTokens(l)
+	if printTokenFlg {
+		printTokens(l)
+	}
 
 	p := parser.New(l.Tokens)
 	stmts := p.Parse()
+
+	// not yet
+	if printParseFlg {
+	}
 
 	x86.Gen(stmts, len(p.VarMap))
 }
