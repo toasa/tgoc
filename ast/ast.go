@@ -121,6 +121,32 @@ func (fss *ForSingleStmt) String() string {
 }
 func (fss *ForSingleStmt) stmtNode() {}
 
+type ForClauseStmt struct {
+	Init  Stmt
+	Cond  Expr
+	Post  Stmt
+	Stmts []Stmt
+}
+
+func (fc *ForClauseStmt) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("for ")
+	out.WriteString(fc.Init.String())
+	out.WriteString("; ")
+	out.WriteString(fc.Cond.String())
+	out.WriteString("; ")
+	out.WriteString(fc.Post.String())
+	out.WriteString("{")
+	for _, stmt := range fc.Stmts {
+		out.WriteString(stmt.String())
+	}
+	out.WriteString("}")
+
+	return out.String()
+}
+func (fc *ForClauseStmt) stmtNode() {}
+
 // --------------------------------------------------------
 // - Expression
 // --------------------------------------------------------

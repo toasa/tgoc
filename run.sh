@@ -112,4 +112,6 @@ run "i := 1; for i < 200 { i = i + 2; } i;" 201
 run "a := 1; for a < 100 { a = a * 2; } a;" 128
 run "i := 1; a := 10 for i < 10 { a = a + i; i = i + 1;} a;" 55
 
+run "a := 10; for i := 0; i < 10; i = i + 1 { a = a + 1; } return a;" 20
+
 echo "OK"

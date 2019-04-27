@@ -66,3 +66,5 @@ VarMap map[string]*ast.Ident
 
     p.VarMap["a"] = &Ident{Name: "a", Val: expr}
     とすればよいはず
+
+------------------------------------------------------

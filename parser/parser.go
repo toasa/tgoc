@@ -206,17 +206,33 @@ func (p *Parser) parseIfStmt() ast.Stmt {
 	return &ast.IfStmt{Cond: cond, Cons: cons, Alt: alt}
 }
 
-func (p *Parser) parseForSingleStmt() ast.Stmt {
-	// skip the `for` token
-	p.nextToken()
-	cond := p.parseExpr()
+func (p *Parser) parseForSingleStmt(cond ast.Expr) ast.Stmt {
 	stmts := p.parseBlockStmt()
 	return &ast.ForSingleStmt{Cond: cond, Stmts: stmts}
 }
 
+func (p *Parser) parseForClauseStmt(init ast.Stmt) ast.Stmt {
+	cond := p.parseExpr()
+	p.expectToken(token.SEMICOLON)
+	post := p.parseStmt()
+	stmts := p.parseBlockStmt()
+	return &ast.ForClauseStmt{Init: init, Cond: cond, Post: post, Stmts: stmts}
+}
+
 func (p *Parser) parseForStmt() ast.Stmt {
-	// ForClauseとForRangeも追加する
-	return p.parseForSingleStmt()
+	// ForRangeも追加する
+
+	// skip the `for` token
+	p.nextToken()
+
+	init := p.parseStmt()
+	if p.curTokenIs(token.LBRACE) {
+		es, ok := init.(*ast.ExprStmt)
+		utils.Assert(ok, "unexpected token in for statement")
+		return p.parseForSingleStmt(es.Expr)
+	} else {
+		return p.parseForClauseStmt(init)
+	}
 }
 
 func (p *Parser) parseStmt() ast.Stmt {
@@ -250,12 +266,24 @@ func (p *Parser) Parse() []ast.Stmt {
 	return p.Stmts
 }
 
+func (p *Parser) prevTokenIs(tt token.TokenType) bool {
+	return tt == p.prevToken().Type
+}
+
 func (p *Parser) curTokenIs(tt token.TokenType) bool {
 	return tt == p.curToken().Type
 }
 
 func (p *Parser) peepTokenIs(tt token.TokenType) bool {
 	return tt == p.peepToken().Type
+}
+
+func (p *Parser) prevToken() token.Token {
+	if p.Pos < 1 {
+		fmt.Println("cannot look at prev token")
+		os.Exit(1)
+	}
+	return p.Tokens[p.Pos-1]
 }
 
 func (p *Parser) curToken() token.Token {

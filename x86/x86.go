@@ -196,7 +196,19 @@ func genStmt(stmt ast.Stmt) {
 		genStmts(stmt.Stmts)
 		fmt.Printf("	jmp .LOOP%s\n", loop)
 		fmt.Printf(".L%s:\n", slipOut)
-
+	case *ast.ForClauseStmt:
+		loop := makeLabel()
+		slipOut := makeLabel()
+		genStmt(stmt.Init)
+		fmt.Printf(".LOOP%s:\n", loop)
+		genExpr(stmt.Cond)
+		fmt.Printf("	pop rax\n")
+		fmt.Printf("	cmp rax, 0\n")
+		fmt.Printf("	je .L%s\n", slipOut)
+		genStmts(stmt.Stmts)
+		genStmt(stmt.Post)
+		fmt.Printf("	jmp .LOOP%s\n", loop)
+		fmt.Printf(".L%s:\n", slipOut)
 	}
 }
 
