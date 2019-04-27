@@ -2,6 +2,9 @@
 Small Go compiler written in Go.
 I aim to implement the self-hosting. (not yet)
 
+## How to use
+`go run main.go INPUT`
+
 ## Requirement
 macOS
 (my environment: 10.14 Mojave, gcc 4.2.1)
