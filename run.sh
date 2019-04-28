@@ -43,12 +43,12 @@ run "26 / (10 + 3)" 2
 run "a := 20 * 2; a" 40
 run "abc := 30 + 4 * 2; xyz := abc * 2; xyz;" 76
 run "a := 1; b := 1; c := a + b; d := b + c; e := c + d; e;" 5
-run "a := 1; b := 1; c := a + b; d := b + c; return d; e := c + d; e;" 3
+run "a := 1; b := 1; c := a + b; d := b + c; e := c + d; return e;" 5
 run "a := 10; a = 1 + 10; return a;" 11
 run "a := 10; a = a + 10; return a;" 20
 run "a := 5; b := a * a; b = 10 + b; return b" 35
 
-run "a := 2 * 3; return a; b := 40;" 6
+run "a := 2 * 3; b := a + 40;" 46
 
 run "+10" 10
 run "-2 + 6;" 4
@@ -69,7 +69,7 @@ run "a:=10; a!=11;" 1
 
 run "true;" 1
 run "false;" 0
-run "1; return false; 3 * 4;" 0
+run "1; return false;" 0
 
 run "1 < 20;" 1
 run "20 < 20" 0
@@ -95,9 +95,10 @@ run "!false" 1
 run "!(20 >= 10*3)" 1
 
 run "if true {20;}" 20
-run "if (1*3<=2+4) {return 10;} 20;" 10
-run "if true {20;} else {30;}" 20
-run "if false {20;} else {30;}" 30
+run "if (1 * 3 <= 2 + 4) {return 10;}" 10
+run "if (1*3<=2+4) { return 10; } return 20;" 10
+run "if 1 * 3 <= 2 + 4 { return 20; } else { return 30; }" 20
+run "if false { return 20; } else { return 30; }" 30
 
 run "6 & 10" 2
 run "6 | 10" 14

@@ -18,6 +18,9 @@ var varNum int
 // To assign a unique number to a label.
 var labelCount int
 
+//
+var returnFlg bool
+
 func initi(n int) {
 	offsets = map[string]int{}
 	varCount = 1
@@ -163,9 +166,14 @@ func genStmt(stmt ast.Stmt) {
 	case *ast.ReturnStmt:
 		genExpr(stmt.Expr)
 		fmt.Printf("	pop rax\n")
-		fmt.Printf("	mov rsp, rbp\n")
-		fmt.Printf("	pop rbp\n")
-		fmt.Printf("	ret\n")
+
+		// printNumStdout1()
+
+		// fmt.Printf("	mov rsp, rbp\n")
+		// fmt.Printf("	pop rbp\n")
+		// fmt.Printf("	ret\n")
+
+		// printNumStdout2()
 		return
 	case *ast.IfStmt:
 		genExpr(stmt.Cond)
@@ -214,33 +222,71 @@ func genStmt(stmt ast.Stmt) {
 
 func genStmts(stmts []ast.Stmt) {
 	for _, stmt := range stmts {
-		genStmt(stmt)
+		rs, ok := stmt.(*ast.ReturnStmt)
+		if !ok {
+			genStmt(stmt)
+		} else {
+			genStmt(rs)
+			fmt.Printf("	jmp _end\n")
+			return
+		}
 	}
 }
 
 func gen(stmts []ast.Stmt) {
-	fmt.Printf("	sub rsp, %d\n", varNum*8)
+
+	if varNum > 0 {
+		// なぜ一つの変数につき、rspを16下げる？（8ではなく）
+		//fmt.Printf("	sub rsp, %d\n", varNum*16)
+		fmt.Printf("	sub rsp, %d\n", varNum*8)
+	}
 	genStmts(stmts)
 }
 
 func Gen(stmts []ast.Stmt, varNum int) {
 	initi(varNum)
 
-	fmt.Printf(".intel_syntax noprefix\n")
-	fmt.Printf(".globl _main\n")
+	//fmt.Printf(".section	__TEXT,__text,regular,pure_instructions\n")
+
+	fmt.Printf("	.intel_syntax noprefix\n")
+	fmt.Printf("	.globl _main\n")
+
 	fmt.Printf("_main:\n")
 	fmt.Printf("	push rbp\n")
 	fmt.Printf("	mov rbp, rsp\n")
 
 	gen(stmts)
 
+	//rintNumStdout1()
+
+	fmt.Printf("_end:\n")
 	fmt.Printf("	mov rsp, rbp\n")
 	fmt.Printf("	pop rbp\n")
 	fmt.Printf("	ret\n")
+
+	//printNumStdout2()
 }
 
 func makeLabel() string {
 	l := fmt.Sprintf("%04d", labelCount)
 	labelCount++
 	return l
+}
+
+func printNumStdout1() {
+	fmt.Printf("	lea	rdi, [rip + L_.str]\n")
+	fmt.Printf("	mov	rsi, rax\n")
+	//fmt.Printf("	movabs rsi, rax\n")
+	fmt.Printf("	mov	al, 0\n")
+	fmt.Printf("	call	_printf\n")
+
+	// fmt.Printf("	xor	ecx, ecx\n")
+	// fmt.Printf("	mov	dword ptr [rbp - 4], eax\n")
+	// fmt.Printf("	mov	eax, ecx\n")
+}
+
+func printNumStdout2() {
+	//fmt.Printf(".section	__TEXT,__cstring,cstring_literals\n")
+	fmt.Printf("L_.str:\n")
+	fmt.Printf("	.asciz	\"%%ld\\n\"\n")
 }
