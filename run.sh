@@ -1,11 +1,13 @@
+#!/bin/bash
+
 run () {
     input=$1
     expected=$2
 
-    go run main.go "${input}" > main.s
-    gcc -o main.o main.s && ./main.o
+    go run main.go "${input}"
+    gcc -o main.o main.s
 
-    output=$?
+    output=$(./main.o)
 
     if [ $output != $expected ]; then
         echo "${input}"

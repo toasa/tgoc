@@ -1,7 +1,9 @@
 package x86
 
 import (
+	"bytes"
 	"fmt"
+	"os"
 	"tgoc/ast"
 	"tgoc/utils"
 )
@@ -21,6 +23,9 @@ var labelCount int
 //
 var returnFlg bool
 
+// Assembly string to output
+var out bytes.Buffer
+
 func initi(n int) {
 	offsets = map[string]int{}
 	varCount = 1
@@ -29,123 +34,122 @@ func initi(n int) {
 }
 
 func genExpr(expr ast.Node) {
-
 	switch expr := expr.(type) {
 	case *ast.IntLit:
-		fmt.Printf("	push %d\n", expr.Val)
+		writeBuf("	push %d\n", expr.Val)
 	case *ast.Boolean:
 		if expr.Val {
-			fmt.Printf("	push 1\n")
+			writeBuf("	push 1\n")
 		} else {
-			fmt.Printf("	push 0\n")
+			writeBuf("	push 0\n")
 		}
 	case *ast.LogicalExpr:
 		genExpr(expr.Lhs)
 		genExpr(expr.Rhs)
 
-		fmt.Printf("	pop rdi\n")
-		fmt.Printf("	pop rax\n")
+		writeBuf("	pop rdi\n")
+		writeBuf("	pop rax\n")
 
 		switch expr.Op {
 		case "==":
-			fmt.Printf("	cmp rax, rdi\n")
-			fmt.Printf("	sete al\n")
-			fmt.Printf("	movzx rax, al\n")
+			writeBuf("	cmp rax, rdi\n")
+			writeBuf("	sete al\n")
+			writeBuf("	movzx rax, al\n")
 		case "!=":
-			fmt.Printf("	cmp rax, rdi\n")
-			fmt.Printf("	sete al\n")
-			fmt.Printf("	movzx rax, al\n")
+			writeBuf("	cmp rax, rdi\n")
+			writeBuf("	sete al\n")
+			writeBuf("	movzx rax, al\n")
 			// 0000 => 0001, 0001 => 0000
-			fmt.Printf("	xor rax, 1\n")
+			writeBuf("	xor rax, 1\n")
 		case "<":
-			fmt.Printf("	cmp rax, rdi\n")
-			fmt.Printf("	setl al\n")
-			fmt.Printf("	movzx rax, al\n")
+			writeBuf("	cmp rax, rdi\n")
+			writeBuf("	setl al\n")
+			writeBuf("	movzx rax, al\n")
 		case "<=":
-			fmt.Printf("	cmp rax, rdi\n")
-			fmt.Printf("	setle al\n")
-			fmt.Printf("	movzx rax, al\n")
+			writeBuf("	cmp rax, rdi\n")
+			writeBuf("	setle al\n")
+			writeBuf("	movzx rax, al\n")
 		case ">":
-			fmt.Printf("	cmp rax, rdi\n")
-			fmt.Printf("	setg al\n")
-			fmt.Printf("	movzx rax, al\n")
+			writeBuf("	cmp rax, rdi\n")
+			writeBuf("	setg al\n")
+			writeBuf("	movzx rax, al\n")
 		case ">=":
-			fmt.Printf("	cmp rax, rdi\n")
-			fmt.Printf("	setge al\n")
-			fmt.Printf("	movzx rax, al\n")
+			writeBuf("	cmp rax, rdi\n")
+			writeBuf("	setge al\n")
+			writeBuf("	movzx rax, al\n")
 		case "&&":
-			fmt.Printf("	and rax, rdi\n")
+			writeBuf("	and rax, rdi\n")
 		case "||":
-			fmt.Printf("	or rax, rdi\n")
+			writeBuf("	or rax, rdi\n")
 		}
-		fmt.Printf("	push rax\n")
+		writeBuf("	push rax\n")
 
 	case *ast.BinaryExpr:
 		genExpr(expr.Lhs)
 		genExpr(expr.Rhs)
 
-		fmt.Printf("	pop rdi\n")
-		fmt.Printf("	pop rax\n")
+		writeBuf("	pop rdi\n")
+		writeBuf("	pop rax\n")
 
 		switch expr.Op {
 		case "+":
-			fmt.Printf("	add rax, rdi\n")
+			writeBuf("	add rax, rdi\n")
 		case "-":
-			fmt.Printf("	sub rax, rdi\n")
+			writeBuf("	sub rax, rdi\n")
 		case "*":
-			fmt.Printf("	mul rdi\n")
+			writeBuf("	mul rdi\n")
 		case "/":
-			fmt.Printf("    xor rdx, rdx\n")
-			fmt.Printf("    div rdi\n")
+			writeBuf("    xor rdx, rdx\n")
+			writeBuf("    div rdi\n")
 		case "%":
-			fmt.Printf("    xor rdx, rdx\n")
-			fmt.Printf("    div rdi\n")
-			fmt.Printf("	mov rax, rdx\n")
+			writeBuf("    xor rdx, rdx\n")
+			writeBuf("    div rdi\n")
+			writeBuf("	mov rax, rdx\n")
 		case "<<":
 			// To change the cl value, changed the rcx value.
 			// cl is lower 8 bit register of rcx register.
-			fmt.Printf("	mov rcx, rdi\n")
-			fmt.Printf("	shl rax, cl\n")
+			writeBuf("	mov rcx, rdi\n")
+			writeBuf("	shl rax, cl\n")
 		case ">>":
-			fmt.Printf("	mov rcx, rdi\n")
-			fmt.Printf("	sar rax, cl\n")
+			writeBuf("	mov rcx, rdi\n")
+			writeBuf("	sar rax, cl\n")
 		case "&":
-			fmt.Printf("	and rax, rdi\n")
+			writeBuf("	and rax, rdi\n")
 		case "|":
-			fmt.Printf("	or rax, rdi\n")
+			writeBuf("	or rax, rdi\n")
 		case "^":
-			fmt.Printf("	xor rax, rdi\n")
+			writeBuf("	xor rax, rdi\n")
 		case "&^":
-			fmt.Printf("	xor rdi, rax\n")
-			fmt.Printf("	and rax, rdi\n")
+			writeBuf("	xor rdi, rax\n")
+			writeBuf("	and rax, rdi\n")
 		}
-		fmt.Printf("	push rax\n")
+		writeBuf("	push rax\n")
 
 	case *ast.UnaryExpr:
 		genExpr(expr.Expr)
-		fmt.Printf("    pop rax\n")
+		writeBuf("    pop rax\n")
 
 		switch expr.Op {
 		case "-":
-			fmt.Printf("	neg rax\n")
+			writeBuf("	neg rax\n")
 		case "!":
-			fmt.Printf("	xor rax, 1\n")
+			writeBuf("	xor rax, 1\n")
 		}
-		fmt.Printf("	push rax \n")
+		writeBuf("	push rax \n")
 
 	case *ast.Ident:
 		os, ok := offsets[expr.Name]
 		utils.Assert(ok, "undefined identifier")
-		fmt.Printf("	mov rax, QWORD PTR [rbp - %d]\n", 8*os)
-		fmt.Printf("	push rax\n")
+		writeBuf("	mov rax, QWORD PTR [rbp - %d]\n", 8*os)
+		writeBuf("	push rax\n")
 	}
 }
 
 func genDecl(decl ast.Decl) {
 	svd, _ := decl.(*ast.SVDecl)
 	genExpr(svd.Val)
-	fmt.Printf("	pop rax\n")
-	fmt.Printf("	mov QWORD PTR [rbp - %d], rax\n", 8*varCount)
+	writeBuf("	pop rax\n")
+	writeBuf("	mov QWORD PTR [rbp - %d], rax\n", 8*varCount)
 	offsets[svd.Name] = varCount
 	varCount++
 }
@@ -154,69 +158,69 @@ func genStmt(stmt ast.Stmt) {
 	switch stmt := stmt.(type) {
 	case *ast.ExprStmt:
 		genExpr(stmt.Expr)
-		fmt.Printf("	pop rax\n")
+		writeBuf("	pop rax\n")
 	case *ast.DeclStmt:
 		genDecl(stmt.Decl)
 	case *ast.AssignStmt:
 		genExpr(stmt.Val)
-		fmt.Printf("	pop rax\n")
+		writeBuf("	pop rax\n")
 		os, ok := offsets[stmt.Name]
 		utils.Assert(ok, "undefined identifier")
-		fmt.Printf("	mov QWORD PTR [rbp - %d], rax\n", 8*os)
+		writeBuf("	mov QWORD PTR [rbp - %d], rax\n", 8*os)
 	case *ast.ReturnStmt:
 		genExpr(stmt.Expr)
-		fmt.Printf("	pop rax\n")
+		writeBuf("	pop rax\n")
 
 		// printNumStdout1()
 
-		// fmt.Printf("	mov rsp, rbp\n")
-		// fmt.Printf("	pop rbp\n")
-		// fmt.Printf("	ret\n")
+		// writeBuf("	mov rsp, rbp\n")
+		// writeBuf("	pop rbp\n")
+		// writeBuf("	ret\n")
 
 		// printNumStdout2()
 		return
 	case *ast.IfStmt:
 		genExpr(stmt.Cond)
-		fmt.Printf("	pop rax\n")
-		fmt.Printf("	cmp rax, 0\n")
+		writeBuf("	pop rax\n")
+		writeBuf("	cmp rax, 0\n")
 
 		lAlt := makeLabel()
 
-		fmt.Printf("	je .L%s\n", lAlt)
+		writeBuf("	je .L%s\n", lAlt)
 		genStmts(stmt.Cons)
 		if stmt.Alt != nil {
 			lEnd := makeLabel()
-			fmt.Printf("	jmp .L%s\n", lEnd)
-			fmt.Printf(".L%s:\n", lAlt)
+			writeBuf("	jmp .L%s\n", lEnd)
+			writeBuf(".L%s:\n", lAlt)
 			genStmts(stmt.Alt)
-			fmt.Printf(".L%s:\n", lEnd)
+			writeBuf(".L%s:\n", lEnd)
 		} else {
-			fmt.Printf(".L%s:\n", lAlt)
+			writeBuf(".L%s:\n", lAlt)
 		}
 	case *ast.ForSingleStmt:
 		loop := makeLabel()
 		slipOut := makeLabel()
-		fmt.Printf(".LOOP%s:\n", loop)
+		writeBuf(".LOOP%s:\n", loop)
 		genExpr(stmt.Cond)
-		fmt.Printf("	pop rax\n")
-		fmt.Printf("	cmp rax, 0\n")
-		fmt.Printf("	je .L%s\n", slipOut)
+		writeBuf("	pop rax\n")
+		writeBuf("	cmp rax, 0\n")
+		writeBuf("	je .L%s\n", slipOut)
 		genStmts(stmt.Stmts)
-		fmt.Printf("	jmp .LOOP%s\n", loop)
-		fmt.Printf(".L%s:\n", slipOut)
+		writeBuf("	jmp .LOOP%s\n", loop)
+		writeBuf(".L%s:\n", slipOut)
 	case *ast.ForClauseStmt:
 		loop := makeLabel()
 		slipOut := makeLabel()
 		genStmt(stmt.Init)
-		fmt.Printf(".LOOP%s:\n", loop)
+		writeBuf(".LOOP%s:\n", loop)
 		genExpr(stmt.Cond)
-		fmt.Printf("	pop rax\n")
-		fmt.Printf("	cmp rax, 0\n")
-		fmt.Printf("	je .L%s\n", slipOut)
+		writeBuf("	pop rax\n")
+		writeBuf("	cmp rax, 0\n")
+		writeBuf("	je .L%s\n", slipOut)
 		genStmts(stmt.Stmts)
 		genStmt(stmt.Post)
-		fmt.Printf("	jmp .LOOP%s\n", loop)
-		fmt.Printf(".L%s:\n", slipOut)
+		writeBuf("	jmp .LOOP%s\n", loop)
+		writeBuf(".L%s:\n", slipOut)
 	}
 }
 
@@ -227,18 +231,17 @@ func genStmts(stmts []ast.Stmt) {
 			genStmt(stmt)
 		} else {
 			genStmt(rs)
-			fmt.Printf("	jmp _end\n")
+			writeBuf("	jmp _end\n")
 			return
 		}
 	}
 }
 
 func gen(stmts []ast.Stmt) {
-
 	if varNum > 0 {
 		// なぜ一つの変数につき、rspを16下げる？（8ではなく）
-		//fmt.Printf("	sub rsp, %d\n", varNum*16)
-		fmt.Printf("	sub rsp, %d\n", varNum*8)
+		writeBuf("	sub rsp, %d\n", varNum*16)
+		//writeBuf("	sub rsp, %d\n", varNum*8)
 	}
 	genStmts(stmts)
 }
@@ -246,25 +249,29 @@ func gen(stmts []ast.Stmt) {
 func Gen(stmts []ast.Stmt, varNum int) {
 	initi(varNum)
 
-	//fmt.Printf(".section	__TEXT,__text,regular,pure_instructions\n")
+	//writeBuf(".section	__TEXT,__text,regular,pure_instructions\n")
 
-	fmt.Printf("	.intel_syntax noprefix\n")
-	fmt.Printf("	.globl _main\n")
+	writeBuf("	.intel_syntax noprefix\n")
+	writeBuf("	.globl _main\n")
 
-	fmt.Printf("_main:\n")
-	fmt.Printf("	push rbp\n")
-	fmt.Printf("	mov rbp, rsp\n")
+	writeBuf("_main:\n")
+	writeBuf("	push rbp\n")
+	writeBuf("	mov rbp, rsp\n")
 
 	gen(stmts)
 
-	//rintNumStdout1()
+	writeBuf("_end:\n")
 
-	fmt.Printf("_end:\n")
-	fmt.Printf("	mov rsp, rbp\n")
-	fmt.Printf("	pop rbp\n")
-	fmt.Printf("	ret\n")
+	printNumStdout1()
 
-	//printNumStdout2()
+	writeBuf("	mov rsp, rbp\n")
+	writeBuf("	pop rbp\n")
+	writeBuf("	ret\n")
+
+	printNumStdout2()
+
+	// fmt.Printf("%s", out.String())
+	makeAssemFile()
 }
 
 func makeLabel() string {
@@ -274,19 +281,34 @@ func makeLabel() string {
 }
 
 func printNumStdout1() {
-	fmt.Printf("	lea	rdi, [rip + L_.str]\n")
-	fmt.Printf("	mov	rsi, rax\n")
-	//fmt.Printf("	movabs rsi, rax\n")
-	fmt.Printf("	mov	al, 0\n")
-	fmt.Printf("	call	_printf\n")
+	writeBuf("	lea	rdi, [rip + L_.str]\n")
+	writeBuf("	mov	rsi, rax\n")
+	writeBuf("	mov	al, 0\n")
+	writeBuf("	call	_printf\n")
 
-	// fmt.Printf("	xor	ecx, ecx\n")
-	// fmt.Printf("	mov	dword ptr [rbp - 4], eax\n")
-	// fmt.Printf("	mov	eax, ecx\n")
+	// writeBuf("	xor	ecx, ecx\n")
+	// writeBuf("	mov	dword ptr [rbp - 4], eax\n")
+	// writeBuf("	mov	eax, ecx\n")
 }
 
 func printNumStdout2() {
-	//fmt.Printf(".section	__TEXT,__cstring,cstring_literals\n")
-	fmt.Printf("L_.str:\n")
-	fmt.Printf("	.asciz	\"%%ld\\n\"\n")
+	//writeBuf(".section	__TEXT,__cstring,cstring_literals\n")
+	writeBuf("L_.str:\n")
+	writeBuf("	.asciz	\"%%ld\\n\"\n")
+}
+
+func writeBuf(argv ...interface{}) {
+	arg0, ok := argv[0].(string)
+	utils.Assert(ok, "1st args of bufWrite() must be string type")
+	str := fmt.Sprintf(arg0, argv[1:]...)
+	out.WriteString(str)
+}
+
+func makeAssemFile() {
+	file, err := os.Create("main.s")
+	if err != nil {
+		panic(err)
+	}
+	file.WriteString(out.String())
+	file.Close()
 }
