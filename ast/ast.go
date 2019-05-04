@@ -215,6 +215,7 @@ func (b *Boolean) exprNode() {}
 type Ident struct {
 	Name string
 	Val  Expr
+	Type Type
 }
 
 func (id *Ident) String() string {
@@ -239,3 +240,26 @@ func (svd *SVDecl) String() string {
 	return out.String()
 }
 func (svd *SVDecl) declNode() {}
+
+type VarDecl struct {
+	Name string
+}
+
+func (vd *VarDecl) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("var ")
+	out.WriteString(vd.Name)
+
+	return out.String()
+}
+func (vd *VarDecl) declNode() {}
+
+// --------------------------------------------------------
+// - Type
+// --------------------------------------------------------
+
+type Type struct {
+	Val   string // TINT or TPTR
+	PtrOf *Type
+}

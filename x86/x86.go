@@ -145,8 +145,12 @@ func genExpr(expr ast.Node) {
 	}
 }
 
-func genDecl(decl ast.Decl) {
-	svd, _ := decl.(*ast.SVDecl)
+func genDecl(vd *ast.VarDecl) {
+	offsets[vd.Name] = varCount
+	varCount++
+}
+
+func genSVDecl(svd *ast.SVDecl) {
 	genExpr(svd.Val)
 	writeBuf("	pop rax\n")
 	writeBuf("	mov QWORD PTR [rbp - %d], rax\n", 8*varCount)
@@ -160,7 +164,12 @@ func genStmt(stmt ast.Stmt) {
 		genExpr(stmt.Expr)
 		writeBuf("	pop rax\n")
 	case *ast.DeclStmt:
-		genDecl(stmt.Decl)
+		switch decl := stmt.Decl.(type) {
+		case *ast.VarDecl:
+			genDecl(decl)
+		case *ast.SVDecl:
+			genSVDecl(decl)
+		}
 	case *ast.AssignStmt:
 		genExpr(stmt.Val)
 		writeBuf("	pop rax\n")

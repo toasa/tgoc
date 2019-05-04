@@ -16,11 +16,13 @@ var keywords map[string]token.TokenType = map[string]token.TokenType{
 	"if":     token.IF,
 	"else":   token.ELSE,
 	"for":    token.FOR,
+	"var":    token.VAR,
 }
 
 var predeclaredIdents map[string]token.TokenType = map[string]token.TokenType{
 	"true":  token.TRUE,
 	"false": token.FALSE,
+	"int":   token.TINT,
 }
 
 // New lexer create

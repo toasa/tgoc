@@ -40,12 +40,18 @@ const (
 	RETURN = "RETURN" // 'return'
 	FOR    = "FOR"    // 'for'
 
+	// Type
+	TINT = "TINT" // 'int'
+
 	LPAREN = "LPAREN" // '('
 	RPAREN = "RPAREN" // ')'
 	LBRACE = "LBRACE" // '{'
 	RBRACE = "RBRACE" // '}'
 
 	ASSIGN = "ASSIGN" // '='
+
+	// Declaration
+	VAR    = "VAR"    // 'var'
 	SVDECL = "SVDECL" // ':=' Short Var Declaration
 
 	SEMICOLON = "SEMICOLON" // ';'

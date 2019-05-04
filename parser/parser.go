@@ -17,6 +17,11 @@ type Parser struct {
 	Stmts  []ast.Stmt
 }
 
+const (
+	TINT = "TINT"
+	TPTR = "TPTR"
+)
+
 func New(t []token.Token) *Parser {
 	return &Parser{Tokens: t, Pos: 0, VarMap: map[string]*ast.Ident{}, Stmts: []ast.Stmt{}}
 }
@@ -141,8 +146,9 @@ func (p *Parser) parseCOr() ast.Expr {
 }
 
 func (p *Parser) parseExpr() ast.Expr {
+	// if p.curTokenIs(token.BAND) {
+
 	lhs := p.parseCOr()
-	//printTree(lhs, 0)
 	return lhs
 }
 
@@ -151,30 +157,86 @@ func (p *Parser) parseExprStmt() ast.Stmt {
 	return &ast.ExprStmt{Expr: expr}
 }
 
+func (p *Parser) parseType() ast.Type {
+	var t ast.Type
+	for p.curTokenIs(token.MUL) {
+		p.nextToken()
+		t_p := p.parseType()
+		t = ast.Type{Val: TPTR, PtrOf: &t_p}
+	}
+	p.expectToken(TINT)
+	t = ast.Type{Val: TINT, PtrOf: nil}
+	return t
+}
+
 func (p *Parser) parseDeclStmt() ast.Stmt {
-	utils.Assert(p.curTokenIs(token.IDENT), "identifier needed")
+	p.nextToken()
+	name := p.Tokens[p.Pos].Literal
+	p.nextToken()
+	t := p.parseType()
+
+	// var abc int = 200;なら
+	// 以下の二文からなるblockstatementにするのはどう？
+	// var abc int
+	// abc = 200
+
+	if p.curTokenIs(token.ASSIGN) {
+		p.nextToken()
+		val := p.parseExpr()
+		p.assignVal(name, val, t)
+		return &ast.AssignStmt{Name: name, Val: val}
+	}
+
+	p.registerVal(name, t)
+	decl := &ast.VarDecl{Name: name}
+	return &ast.DeclStmt{Decl: decl}
+}
+
+func (p *Parser) parseSVDStmt() ast.Stmt {
+	utils.Assert(p.curTokenIs(token.IDENT), "identifier needed, but got %s token")
 	name := p.Tokens[p.Pos].Literal
 	p.nextToken()
 	p.nextToken()
-	val := p.parseExpr()
 
-	p.assignVal(name, val)
-	decl := &ast.SVDecl{Name: name, Val: val}
+	var decl *ast.SVDecl
+	// &がついていたらpointerとして扱う
+	if p.curTokenIs(token.BAND) {
+		p.nextToken()
+		// a := &bの場合bの型はすでに登録されているものとする
+		val := p.parseExpr()
+		id, ok := val.(*ast.Ident)
+		if !ok {
+			fmt.Println("expected identifier")
+		}
+		p.assignVal(name, val, ast.Type{Val: TPTR, PtrOf: &id.Type})
+		decl = &ast.SVDecl{Name: name, Val: val}
+	} else {
+		// 同様、かたを知りたい
+		val := p.parseExpr()
+		p.assignVal(name, val, ast.Type{Val: TINT, PtrOf: nil})
+		decl = &ast.SVDecl{Name: name, Val: val}
+	}
+
 	return &ast.DeclStmt{Decl: decl}
 }
 
 func (p *Parser) parseAssignStmt() ast.Stmt {
 	name := p.Tokens[p.Pos].Literal
-	if _, ok := p.VarMap[name]; !ok {
+
+	var ident *ast.Ident
+	// この時点でidentには型が登録されているものとする
+	ident, ok := p.VarMap[name]
+	if !ok {
 		fmt.Printf("Undeclared identifier: %s", name)
 		os.Exit(1)
 	}
 	p.nextToken()
 	p.nextToken()
+
+	// b = &a
+	// ここで&aとすると、parseExprでunexpected token: &となる
 	val := p.parseExpr()
-
-	p.assignVal(name, val)
-
+	p.assignVal(name, val, ident.Type)
 	return &ast.AssignStmt{Name: name, Val: val}
 }
 
@@ -239,6 +301,8 @@ func (p *Parser) parseStmt() ast.Stmt {
 	var stmt ast.Stmt
 
 	if p.curTokenIs(token.IDENT) && p.peepTokenIs(token.SVDECL) {
+		stmt = p.parseSVDStmt()
+	} else if p.curTokenIs(token.VAR) {
 		stmt = p.parseDeclStmt()
 	} else if p.curTokenIs(token.IDENT) && p.peepTokenIs(token.ASSIGN) {
 		stmt = p.parseAssignStmt()
@@ -325,6 +389,11 @@ func printTree(node ast.Expr, tab int) {
 	return
 }
 
-func (p *Parser) assignVal(name string, expr ast.Expr) {
-	p.VarMap[name] = &ast.Ident{Name: name, Val: expr}
+func (p *Parser) assignVal(name string, expr ast.Expr, t ast.Type) {
+	p.VarMap[name] = &ast.Ident{Name: name, Val: expr, Type: t}
+}
+
+// 変数の宣言時（decl時）にp.VarMapに登録する変数名と型を登録する
+func (p *Parser) registerVal(name string, t ast.Type) {
+	p.VarMap[name] = &ast.Ident{Name: name, Type: t}
 }
