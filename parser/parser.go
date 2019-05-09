@@ -64,20 +64,12 @@ func (p *Parser) parseIdent() ast.Expr {
 
 func (p *Parser) parseUnary() ast.Expr {
 	var lhs ast.Expr
-	if p.curTokenIs(token.SUB) {
+	if p.curTokenIs(token.SUB) || p.curTokenIs(token.NOT) ||
+		p.curTokenIs(token.BAND) || p.curTokenIs(token.MUL) {
+
+		op := p.curToken().Literal
 		p.nextToken()
-		lhs = &ast.UnaryExpr{Op: "-", Expr: p.parseIdent()}
-	} else if p.curTokenIs(token.NOT) {
-		p.nextToken()
-		lhs = &ast.UnaryExpr{Op: "!", Expr: p.parseIdent()}
-	} else if p.curTokenIs(token.BAND) {
-		// address operator: &
-		p.nextToken()
-		lhs = &ast.UnaryExpr{Op: "&", Expr: p.parseIdent()}
-	} else if p.curTokenIs(token.MUL) {
-		// pointer derefer: *
-		p.nextToken()
-		lhs = &ast.UnaryExpr{Op: "*", Expr: p.parseIdent()}
+		lhs = &ast.UnaryExpr{Op: op, Expr: p.parseIdent()}
 	} else {
 		if p.curTokenIs(token.ADD) {
 			p.nextToken()
