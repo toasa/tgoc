@@ -11,6 +11,9 @@ import (
 // Identifier name: offset from bsp
 var offsets map[string]int
 
+// Identifier map
+var varMap map[string]*ast.Ident
+
 // The number of stored identifier to stack
 var varCount int
 
@@ -20,16 +23,14 @@ var varNum int
 // To assign a unique number to a label.
 var labelCount int
 
-//
-var returnFlg bool
-
 // Assembly string to output
 var out bytes.Buffer
 
-func initi(n int) {
+func initi(identMap map[string]*ast.Ident) {
 	offsets = map[string]int{}
 	varCount = 1
-	varNum = n
+	varNum = len(identMap)
+	varMap = identMap
 	labelCount = 0
 }
 
@@ -131,9 +132,33 @@ func genExpr(expr ast.Node) {
 
 		switch expr.Op {
 		case "-":
-			writeBuf("	neg rax\n")
+			writeBuf("    neg rax\n")
 		case "!":
-			writeBuf("	xor rax, 1\n")
+			writeBuf("    xor rax, 1\n")
+		case "&":
+			// この書き方では
+			// var a int
+			// var b *int
+			// a = 1
+			// b = &a;
+			// のように、*が１つの式しかコンパイルできず、以下のようなものは無理
+
+			// var a int
+			// var b *int
+			// var c **int
+			// a = 10
+			// b = &a
+			// c = &b
+
+			id, ok := expr.Expr.(*ast.Ident)
+			utils.Assert(ok, "&a: a must be identifier")
+			os, ok := offsets[id.Name]
+			utils.Assert(ok, "undefined identifier")
+			writeBuf("    mov rax, rbp\n")
+			writeBuf("    sub rax, %d\n", 8*os)
+		case "*":
+			// raxにはアドレスが入っているはず、その逆参照をすれば良い
+			writeBuf("    mov rax, [rax]\n")
 		}
 		writeBuf("	push rax \n")
 
@@ -255,8 +280,8 @@ func gen(stmts []ast.Stmt) {
 	genStmts(stmts)
 }
 
-func Gen(stmts []ast.Stmt, varNum int) {
-	initi(varNum)
+func Gen(stmts []ast.Stmt, identMap map[string]*ast.Ident) {
+	initi(identMap)
 
 	//writeBuf(".section	__TEXT,__text,regular,pure_instructions\n")
 

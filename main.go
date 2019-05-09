@@ -45,7 +45,7 @@ func main() {
 	if printParseFlg {
 	}
 
-	x86.Gen(stmts, len(p.VarMap))
+	x86.Gen(stmts, p.VarMap)
 }
 
 func printTokens(l *lexer.Lexer) {

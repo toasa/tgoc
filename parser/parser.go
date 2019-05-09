@@ -70,6 +70,14 @@ func (p *Parser) parseUnary() ast.Expr {
 	} else if p.curTokenIs(token.NOT) {
 		p.nextToken()
 		lhs = &ast.UnaryExpr{Op: "!", Expr: p.parseIdent()}
+	} else if p.curTokenIs(token.BAND) {
+		// address operator: &
+		p.nextToken()
+		lhs = &ast.UnaryExpr{Op: "&", Expr: p.parseIdent()}
+	} else if p.curTokenIs(token.MUL) {
+		// pointer derefer: *
+		p.nextToken()
+		lhs = &ast.UnaryExpr{Op: "*", Expr: p.parseIdent()}
 	} else {
 		if p.curTokenIs(token.ADD) {
 			p.nextToken()
@@ -146,8 +154,6 @@ func (p *Parser) parseCOr() ast.Expr {
 }
 
 func (p *Parser) parseExpr() ast.Expr {
-	// if p.curTokenIs(token.BAND) {
-
 	lhs := p.parseCOr()
 	return lhs
 }
@@ -158,19 +164,27 @@ func (p *Parser) parseExprStmt() ast.Stmt {
 }
 
 func (p *Parser) parseType() ast.Type {
+	if p.curTokenIs(token.TINT) {
+		p.nextToken()
+		return ast.Type{Val: TINT, PtrOf: nil}
+	}
+
 	var t ast.Type
 	for p.curTokenIs(token.MUL) {
 		p.nextToken()
 		t_p := p.parseType()
 		t = ast.Type{Val: TPTR, PtrOf: &t_p}
 	}
-	p.expectToken(TINT)
-	t = ast.Type{Val: TINT, PtrOf: nil}
+	if p.curTokenIs(token.TINT) {
+		p.nextToken()
+	}
 	return t
 }
 
 func (p *Parser) parseDeclStmt() ast.Stmt {
+	// var tokenを読み飛ばす
 	p.nextToken()
+
 	name := p.Tokens[p.Pos].Literal
 	p.nextToken()
 	t := p.parseType()
