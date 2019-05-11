@@ -62,14 +62,29 @@ func (p *Parser) parseIdent() ast.Expr {
 	}
 }
 
+func (p *Parser) parsePtrExpr() ast.Expr {
+	if !p.curTokenIs(token.MUL) {
+		return &ast.PtrExpr{Of: nil, Expr: p.parseIdent()}
+	}
+
+	var ptr ast.Expr
+	for p.curTokenIs(token.MUL) {
+		p.nextToken()
+		pp := p.parsePtrExpr()
+		pp_ := pp.(*ast.PtrExpr)
+		ptr = &ast.PtrExpr{Of: pp_, Expr: nil}
+	}
+	return ptr
+}
+
 func (p *Parser) parseUnary() ast.Expr {
 	var lhs ast.Expr
-	if p.curTokenIs(token.SUB) || p.curTokenIs(token.NOT) ||
-		p.curTokenIs(token.BAND) || p.curTokenIs(token.MUL) {
-
+	if p.curTokenIs(token.SUB) || p.curTokenIs(token.NOT) || p.curTokenIs(token.BAND) {
 		op := p.curToken().Literal
 		p.nextToken()
 		lhs = &ast.UnaryExpr{Op: op, Expr: p.parseIdent()}
+	} else if p.curTokenIs(token.MUL) {
+		lhs = p.parsePtrExpr()
 	} else {
 		if p.curTokenIs(token.ADD) {
 			p.nextToken()

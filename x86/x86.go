@@ -136,32 +136,31 @@ func genExpr(expr ast.Node) {
 		case "!":
 			writeBuf("    xor rax, 1\n")
 		case "&":
-			// この書き方では
-			// var a int
-			// var b *int
-			// a = 1
-			// b = &a;
-			// のように、*が１つの式しかコンパイルできず、以下のようなものは無理
-
-			// var a int
-			// var b *int
-			// var c **int
-			// a = 10
-			// b = &a
-			// c = &b
-
 			id, ok := expr.Expr.(*ast.Ident)
 			utils.Assert(ok, "&a: a must be identifier")
 			os, ok := offsets[id.Name]
+
+			//fmt.Println(id.Name, ":", 8*os)
+
 			utils.Assert(ok, "undefined identifier")
 			writeBuf("    mov rax, rbp\n")
 			writeBuf("    sub rax, %d\n", 8*os)
-		case "*":
-			// raxにはアドレスが入っているはず、その逆参照をすれば良い
+		}
+		writeBuf("	push rax\n")
+
+	// Dereference
+	case *ast.PtrExpr:
+		derefCount := 0
+		for expr.Of != nil {
+			expr = expr.Of
+			derefCount++
+		}
+		genExpr(expr.Expr)
+		writeBuf("    pop rax\n")
+		for i := 0; i < derefCount; i++ {
 			writeBuf("    mov rax, [rax]\n")
 		}
-		writeBuf("	push rax \n")
-
+		writeBuf("    push rax\n")
 	case *ast.Ident:
 		os, ok := offsets[expr.Name]
 		utils.Assert(ok, "undefined identifier")

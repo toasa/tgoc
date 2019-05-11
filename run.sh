@@ -119,5 +119,7 @@ run "a := 10; for i := 0; i < 10; i = i + 1 { a = a + 1; } return a;" 20
 
 run "var a int; a = 10; return a" 10
 run "var a int; a = 20; var b *int; b = &a; return *b" 20
+run "var a int; var b *int; var c **int; a = 2550; b = &a; c = &b; return *b;" 2550
+run "var a int; var b *int; var c **int; a = 10; b = &a; c = &b; return **c;" 10
 
 echo "OK"

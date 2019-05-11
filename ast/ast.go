@@ -180,6 +180,16 @@ func (ue *UnaryExpr) String() string {
 }
 func (ue *UnaryExpr) exprNode() {}
 
+type PtrExpr struct {
+	Of   *PtrExpr
+	Expr Expr
+}
+
+func (pe *PtrExpr) String() string {
+	return ""
+}
+func (pe *PtrExpr) exprNode() {}
+
 type LogicalExpr struct {
 	Op  string
 	Lhs Expr

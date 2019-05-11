@@ -71,3 +71,25 @@ VarMap map[string]*ast.Ident
 
 run "var abc int = 200; return abc" 200
 がコンパイルできるようになりたい
+
+------------------------------------------------------
+var a int
+var b *int
+var c **int
+a = 10
+b = &a (= rbp - 8)
+c = &b (= rbp - 16)
+return **c
+
+現状では、
+**cのときに
+**を読み飛ばし、genExpr(c)を行い、bのアドレス: rbp - 16がスタックトップに積まれ、
+それをreturnを、逆参照し、returnしている。
+mov rax [rbp - 16]
+ただ、[rbp - 16]の値も単なるaアドレス(rbp - 8)が入っているので逆参照がうまく行っていない。
+
+よって以下のような挙動にしたい。まず*cを求めると、
+*(*c) => 
+mov rax, [rbp - 16]
+mov rax, [rax]
+push rax
